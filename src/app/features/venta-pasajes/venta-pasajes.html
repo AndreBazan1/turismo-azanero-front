@@ -1,0 +1,25 @@
+<div class="contenedor-venta">
+  <h2>Croquis del Viaje</h2>
+
+<div class="croquis-container">
+  @for (asiento of asientos; track asiento.idAsiento) {
+    <button 
+      class="asiento" 
+      [ngClass]="{
+        'chofer': asiento.esChofer,
+        'libre': asiento.estado === 'LIBRE',
+        'ocupado': asiento.estado === 'OCUPADO',
+        'seleccionado': asientoSeleccionado?.idAsiento === asiento.idAsiento
+      }"
+      [disabled]="asiento.estado === 'OCUPADO' || asiento.esChofer"
+      (click)="seleccionarAsiento(asiento)">
+      {{ asiento.esChofer ? 'Chofer' : asiento.numero }}
+    </button>
+  }
+</div>
+
+@if (asientoSeleccionado) {
+  <div class="resumen-seleccion">
+    <p>Asiento seleccionado: <strong>N° {{ asientoSeleccionado.numero }}</strong></p>
+  </div>
+}

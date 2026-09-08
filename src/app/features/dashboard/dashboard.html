@@ -1,0 +1,165 @@
+<div class="app-container">
+  <!-- Sidebar (Columna izquierda preservada) -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h3>Turismo Azañero</h3>
+      <span>Regional Manager</span>
+    </div>
+
+    <nav class="nav-menu">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/rutas" routerLinkActive="active" class="nav-item">
+        <span class="icon">🛣️</span> Rutas
+      </a>
+      <a routerLink="/flota" routerLinkActive="active" class="nav-item">
+        <span class="icon">🚌</span> Flota
+      </a>
+      <a routerLink="/pasajeros" routerLinkActive="active" class="nav-item">
+        <span class="icon">👥</span> Pasajeros
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-schedule" routerLink="/viajes/1/croquis">+ Programar Viaje</button>
+      <div class="footer-link-configuration">
+        <a href="#">⚙️ Configuración</a>
+      </div>
+      <div class="footer-link-support">
+        <a href="#">❓ Soporte</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="main-content">
+    <!-- Header Superior / Búsqueda y Perfil -->
+    <header class="topbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search routes, vehicles..." />
+      </div>
+      <div class="topbar-actions">
+        <span class="location-tag">Cajamarca Office</span>
+        <button class="icon-btn">🔔</button>
+        <button class="icon-btn">📅</button>
+        <button class="icon-btn">📍</button>
+        <div class="user-avatar">
+          <img src="https://ui-avatars.com/api/?name=Admin+User&background=1e293b&color=fff" alt="Perfil" />
+        </div>
+      </div>
+    </header>
+
+    @if (data) {
+      <!-- Encabezado Overview + Botones de Acción -->
+      <div class="dashboard-header">
+        <div class="title-area">
+          <h2>Overview</h2>
+          <p>Real-time operational status for today.</p>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-secondary">+ Register Passenger</button>
+          <button class="btn-primary" routerLink="/viajes/1/croquis">+ New Trip</button>
+        </div>
+      </div>
+
+      <!-- Tarjetas KPI -->
+      <div class="kpi-grid">
+        <!-- KPI 1: Viajes Hoy -->
+        <div class="kpi-card card-blue">
+          <div class="kpi-header">
+            <small>TOTAL TRIPS TODAY</small>
+            <span class="kpi-icon">🛣️</span>
+          </div>
+          <div class="kpi-body">
+            <h3>{{ data.viajesHoy }}</h3>
+            <span class="trend positive">↑ 12% vs ayer</span>
+          </div>
+          <div class="kpi-line blue-line"></div>
+        </div>
+
+        <!-- KPI 2: Flota Disponible -->
+        <div class="kpi-card card-green">
+          <div class="kpi-header">
+            <small>FLEET AVAILABILITY</small>
+            <span class="kpi-icon">🚌</span>
+          </div>
+          <div class="kpi-body">
+            <h3>{{ data.flotaDisponible }} <span class="total">/ {{ data.totalFlota }}</span></h3>
+            <small class="subtext">{{ data.enMantenimiento }} Maintenance • {{ data.enRuta }} En Route</small>
+          </div>
+          <div class="kpi-line green-line"></div>
+        </div>
+
+        <!-- KPI 3: Total Pasajeros -->
+        <div class="kpi-card card-orange">
+          <div class="kpi-header">
+            <small>TOTAL PASSENGERS</small>
+            <span class="kpi-icon">👥</span>
+          </div>
+          <div class="kpi-body">
+            <h3>{{ data.totalPasajeros }}</h3>
+            <div class="chips">
+              <span class="chip">CAJ: {{ data.pasajerosCajamarca }}</span>
+              <span class="chip">CEL: {{ data.pasajerosCelendin }}</span>
+            </div>
+          </div>
+          <div class="kpi-line orange-line"></div>
+        </div>
+      </div>
+
+      <!-- Tabla Próximas Salidas -->
+      <section class="table-card">
+        <div class="table-header">
+          <h3>Próximas Salidas</h3>
+          <a href="#" class="view-all">View All →</a>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>ROUTE</th>
+                <th>TIME</th>
+                <th>DRIVER</th>
+                <th>VEHICLE ID</th>
+                <th>OCCUPANCY</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of data.proximasSalidas; track s.idViaje) {
+                <tr [routerLink]="['/viajes', s.idViaje, 'croquis']" style="cursor: pointer;">
+                  <td class="col-route"><strong>{{ s.ruta }}</strong></td>
+                  <td class="col-time">{{ s.hora }}</td>
+                  <td class="col-driver">
+                    <div class="driver-info">
+                      <span class="avatar-initials">{{ s.iniciales }}</span>
+                      <span>{{ s.chofer }}</span>
+                    </div>
+                  </td>
+                  <td class="col-vehicle">{{ s.vehiculoId }}</td>
+                  <td class="col-occupancy">
+                    <div class="occupancy-wrapper">
+                      <span>{{ s.ocupacion }}</span>
+                      <div class="progress-bar">
+                        <div class="progress-fill" [style.width.%]="s.porcentaje || 66"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="col-status">
+                    <span class="badge" [ngClass]="{
+                      'status-on-time': s.estado === 'On Time',
+                      'status-boarding': s.estado === 'Boarding',
+                      'status-delayed': s.estado?.includes('Delayed')
+                    }">{{ s.estado }}</span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+  </main>
+</div>
