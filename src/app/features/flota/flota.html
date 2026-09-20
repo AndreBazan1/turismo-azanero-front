@@ -1,0 +1,114 @@
+<div class="flota-container">
+
+  <!-- Encabezado -->
+  <div class="flota-header">
+    <div class="flota-header-left">
+      <h2>Gestión de Flota</h2>
+      <p>Administra y monitorea todos los vehículos activos en el corredor Cajamarca-Celendín.</p>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="flota-filtros">
+    <div class="filtros-tabs">
+      <button
+        class="filtro-tab"
+        [class.active]="filtroActual === 'TODOS'"
+        (click)="setFiltro('TODOS')">
+        Todos los Vehículos
+      </button>
+      <button
+        class="filtro-tab"
+        [class.active]="filtroActual === 'DISPONIBLE'"
+        (click)="setFiltro('DISPONIBLE')">
+        Disponible ({{ countDisponible }})
+      </button>
+      <button
+        class="filtro-tab"
+        [class.active]="filtroActual === 'EN_VIAJE'"
+        (click)="setFiltro('EN_VIAJE')">
+        En Viaje ({{ countEnViaje }})
+      </button>
+      <button
+        class="filtro-tab mantenimiento"
+        [class.active]="filtroActual === 'MANTENIMIENTO'"
+        (click)="setFiltro('MANTENIMIENTO')">
+        Mantenimiento ({{ countMantenimiento }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Estado de carga -->
+  @if (cargando) {
+    <div class="estado-carga">Cargando flota...</div>
+  }
+
+  <!-- Grid de vehículos -->
+  @if (!cargando) {
+    <div class="vehiculos-grid">
+      @for (v of vehiculosFiltrados; track v.idVehiculo) {
+        <div class="vehiculo-card" [class.card-mantenimiento]="normalizeEstado(v.estado) === 'MANTENIMIENTO'">
+
+          <!-- Card header -->
+          <div class="card-header">
+            <div class="card-header-info">
+              <span class="placa">{{ v.placa }}</span>
+              <span class="modelo-anio">{{ v.marca }} {{ v.modelo }} • {{ v.anio }}</span>
+            </div>
+            <span class="badge-estado" [ngClass]="getEstadoClass(v.estado)">
+              {{ getEstadoLabel(v.estado) }}
+            </span>
+          </div>
+
+          <!-- Capacidad -->
+          <div class="card-capacidad">
+            <span class="capacidad-icon">🪑</span>
+            <span class="capacidad-label">Capacidad</span>
+            <span class="capacidad-valor">{{ v.capacidad }} asientos</span>
+          </div>
+
+          <!-- Chofer -->
+          @if (v.choferAsignado) {
+            <div class="card-chofer">
+              <span class="chofer-icon">👤</span>
+              <span class="chofer-nombre">{{ v.choferAsignado }}</span>
+            </div>
+          }
+
+          <!-- Revisión -->
+          @if (v.ultimaRevision) {
+            <div class="card-revision">
+              <span class="revision-icon">🔧</span>
+              <span class="revision-texto">Última revisión: {{ v.ultimaRevision | date:'dd/MM/yyyy' }}</span>
+            </div>
+          }
+
+          @if (normalizeEstado(v.estado) === 'MANTENIMIENTO') {
+            <div class="card-alerta">
+              ⚠️ Vehículo en servicio de mantenimiento
+            </div>
+          }
+
+          <!-- Acciones -->
+          <div class="card-acciones">
+            @if (normalizeEstado(v.estado) === 'DISPONIBLE') {
+              <button class="btn-accion btn-asignar">Asignar Viaje</button>
+            }
+            @if (normalizeEstado(v.estado) === 'EN_VIAJE') {
+              <button class="btn-accion btn-rastrear">Rastrear Ruta</button>
+            }
+            @if (normalizeEstado(v.estado) === 'MANTENIMIENTO') {
+              <button class="btn-accion btn-ticket">Ver Ticket</button>
+            }
+          </div>
+
+        </div>
+      } @empty {
+        @if (!cargando) {
+          <div class="vacio-box">No hay vehículos en esta categoría.</div>
+        }
+      }
+    </div>
+  }
+
+</div>

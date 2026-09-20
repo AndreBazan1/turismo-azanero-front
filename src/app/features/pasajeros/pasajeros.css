@@ -1,0 +1,664 @@
+.modulo-pasajeros-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #0f172a;
+}
+
+/* ============================================================ */
+/* MODO 1: LISTADO DE VIAJES                                    */
+/* ============================================================ */
+.encabezado-pasajeros {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.encabezado-pasajeros .titulos h2 {
+  margin: 0 0 6px 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.encabezado-pasajeros .titulos p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+.busqueda-viajes-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 8px 14px;
+  border-radius: 8px;
+  width: 320px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.busqueda-viajes-box input {
+  border: none;
+  outline: none;
+  font-size: 0.88rem;
+  width: 100%;
+}
+
+/* Grilla de Viajes */
+.grid-viajes-manifiesto {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.card-viaje-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-viaje-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+}
+
+.card-viaje-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.ruta-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.flecha-ruta {
+  color: #059669;
+}
+
+.badge-hora {
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.card-viaje-detalles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.card-viaje-detalles .dato {
+  font-size: 0.82rem;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-viaje-detalles .dato strong {
+  color: #1e293b;
+  font-size: 0.88rem;
+  margin-top: 2px;
+}
+
+.precio-txt {
+  color: #059669 !important;
+}
+
+/* Ocupación */
+.ocupacion-contenedor {
+  margin-bottom: 18px;
+}
+
+.ocupacion-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.ocupacion-labels strong {
+  color: #0f172a;
+}
+
+.progreso-bar {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progreso-bar.grande {
+  height: 10px;
+}
+
+.progreso-fill {
+  height: 100%;
+  background: #059669;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.card-viaje-acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-ver-manifiesto {
+  flex: 2;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-ver-manifiesto:hover {
+  background: #1e293b;
+}
+
+.btn-ir-croquis {
+  flex: 1;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-ir-croquis:hover {
+  background: #e2e8f0;
+}
+
+/* ============================================================ */
+/* MODO 2: MANIFIESTO DE SALIDA DETALLADO                       */
+/* ============================================================ */
+.manifiesto-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-volver-viajes {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.topbar-acciones-derecha {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-imprimir {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #0f172a;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-imprimir:hover {
+  background: #f1f5f9;
+}
+
+.btn-vender-shortcut {
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Encabezado del Manifiesto */
+.manifiesto-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.tag-sub {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.manifiesto-header h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.agencia-sello {
+  text-align: right;
+}
+
+.marca-empresa {
+  display: block;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.oficina-txt {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+/* Fila Superior: Trip Details + Seat Map */
+.grid-resumen-manifiesto {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 840px) {
+  .grid-resumen-manifiesto {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card-trip-details, .card-seat-map {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.card-trip-details h3, .card-seat-map h3 {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.trip-datos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.trip-dato-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.dato-lbl {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.dato-val {
+  font-size: 0.95rem;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.ocupacion-seccion {
+  background: #f8fafc;
+  padding: 12px 14px;
+  border-radius: 8px;
+}
+
+.ocupacion-header-mini {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  color: #475569;
+}
+
+/* Seat Map Card */
+.seat-map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.seat-map-leyenda {
+  display: flex;
+  gap: 12px;
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.caja-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.caja-dot.ocupado {
+  background: #0f172a;
+}
+
+.caja-dot.libre {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+}
+
+.croquis-visual-combi {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.cabina-chofer-visual {
+  margin-bottom: 12px;
+}
+
+.chofer-badge {
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.asientos-grid-mini {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.asiento-mini {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.asiento-mini.asignado {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.asiento-mini.disponible {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #64748b;
+}
+
+/* Passenger List Card */
+.card-passenger-list {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.passenger-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.titulo-con-conteo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titulo-con-conteo h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.badge-total-pasajeros {
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid #a7f3d0;
+}
+
+.buscador-pasajeros-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 6px;
+  width: 260px;
+}
+
+.buscador-pasajeros-input input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+/* Tabla de Pasajeros */
+.tabla-pasajeros-wrapper {
+  overflow-x: auto;
+}
+
+.tabla-pasajeros {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.tabla-pasajeros th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748b;
+  border-bottom: 1.5px solid #e2e8f0;
+  letter-spacing: 0.5px;
+}
+
+.tabla-pasajeros td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.asiento-pill {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.asiento-pill.ocupado-pill {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.texto-disponible {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.badge-estado-ocupado {
+  background: #ecfdf5;
+  color: #059669;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.btn-asignar-mini {
+  background: transparent;
+  border: 1px solid #059669;
+  color: #059669;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-asignar-mini:hover {
+  background: #059669;
+  color: #ffffff;
+}
+
+/* Pie del Manifiesto para Impresión */
+.pie-impresion-oficial {
+  display: none;
+  margin-top: 40px;
+  padding-top: 20px;
+  justify-content: space-around;
+}
+
+.firma-box {
+  text-align: center;
+  width: 220px;
+}
+
+.linea-firma {
+  height: 1px;
+  background: #0f172a;
+  margin-bottom: 6px;
+}
+
+.firma-box span {
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+/* Loading & Empty */
+.loading-box, .empty-box {
+  text-align: center;
+  padding: 50px 20px;
+  color: #64748b;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ============================================================ */
+/* REGLAS PARA IMPRESIÓN OFICIAL (A4)                           */
+/* ============================================================ */
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  .no-print, 
+  aside.sidebar, 
+  header.topbar, 
+  .btn-volver-viajes,
+  .btn-imprimir,
+  .btn-vender-shortcut,
+  .buscador-pasajeros-input,
+  .btn-asignar-mini {
+    display: none !important;
+  }
+
+  .modulo-pasajeros-container {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .card-passenger-list, 
+  .card-trip-details, 
+  .card-seat-map {
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  .pie-impresion-oficial {
+    display: flex !important;
+  }
+}

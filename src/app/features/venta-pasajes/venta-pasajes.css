@@ -1,60 +1,968 @@
 .contenedor-venta {
-  font-family: Arial, sans-serif;
-  padding: 20px;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1e293b;
+}
+
+/* ============================================================ */
+/* PASO 1: ENCABEZADO Y CROQUIS                                 */
+/* ============================================================ */
+.encabezado-croquis {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.btn-volver-rutas {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-volver-rutas:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.info-viaje-resumen h2 {
+  margin: 0 0 4px 0;
+  font-size: 1.3rem;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.info-viaje-resumen p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.precio-tag {
+  background: #ecfdf5;
+  color: #059669;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  border: 1px solid #a7f3d0;
+}
+
+/* Wrapper del Croquis */
+.croquis-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 28px;
+  margin-bottom: 90px; /* Espacio para barra flotante */
+  flex-wrap: wrap;
 }
 
 .croquis-combi {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columnas (2 asientos, pasillo, 2 asientos) */
-  gap: 15px;
-  max-width: 350px;
-  margin-top: 20px;
-  background-color: #f5f5f5;
-  padding: 20px;
-  border-radius: 10px;
-  border: 2px solid #ccc;
+  width: 360px;
+  background: #ffffff;
+  padding: 24px 20px;
+  border-radius: 20px;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
 }
 
-.asiento {
-  padding: 15px 5px;
+.cabecera-combi {
   text-align: center;
-  border-radius: 8px;
-  font-weight: bold;
+  font-weight: 700;
+  color: #64748b;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+  border-bottom: 2px dashed #cbd5e1;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.grid-combi {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.pasillo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Asientos */
+.asiento {
+  position: relative;
+  height: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: transform 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  user-select: none;
 }
 
-.asiento:hover:not(.ocupado):not(.chofer) {
-  transform: scale(1.05);
+.asiento:hover:not(.chofer):not(.ocupado) {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.asiento.chofer {
+  background: #f1f5f9;
+  color: #64748b;
+  border-color: #cbd5e1;
+  cursor: default;
+  font-size: 0.75rem;
+}
+
+.asiento.libre {
+  background: #ffffff;
+  color: #1e293b;
+  border-color: #cbd5e1;
+}
+
+.asiento.libre:hover {
+  border-color: #059669;
+  color: #059669;
+}
+
+.asiento.ocupado {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+  opacity: 0.75;
 }
 
 .asiento.seleccionado {
-  background-color: #f59e0b;
+  background: #059669;
   color: #ffffff;
-  border-color: #d97706;
-  transform: scale(1.05);
+  border-color: #047857;
+  box-shadow: 0 4px 10px rgba(5, 150, 105, 0.35);
+  transform: translateY(-2px);
 }
 
-.asiento:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
+.check-mark {
+  position: absolute;
+  top: 2px;
+  right: 5px;
+  font-size: 0.7rem;
+  font-weight: 900;
 }
 
-.resumen-seleccion {
-  margin-top: 20px;
-  padding: 10px 15px;
-  background-color: #eff6ff;
-  border-left: 4px solid #3b82f6;
+.leyenda {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.82rem;
+  color: #475569;
+}
+
+.leyenda .item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
   border-radius: 4px;
+  display: inline-block;
 }
 
-/* Colores según estado */
-.libre { background-color: #e8f5e9; color: #2e7d32; border-color: #2e7d32; }
-.ocupado { background-color: #ffebee; color: #c62828; border-color: #c62828; cursor: not-allowed; opacity: 0.7; }
-.reservado { background-color: #fff3e0; color: #ef6c00; border-color: #ef6c00; }
-.chofer { 
-  background-color: #eceff1; color: #455a64; border-color: #607d8b; 
-  cursor: not-allowed; 
-  grid-column: 1 / 3; /* El chofer ocupa más espacio a la izquierda */
+.dot.libre {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+}
+
+.dot.seleccionado {
+  background: #059669;
+}
+
+.dot.ocupado {
+  background: #cbd5e1;
+}
+
+/* Card de detalle de asiento ocupado */
+.card-ocupado-detalle {
+  width: 320px;
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.ocupado-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.ocupado-header h4 {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #1e293b;
+}
+
+.btn-cerrar-mini {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #94a3b8;
+}
+
+.datos-consulta p {
+  margin: 6px 0;
+  font-size: 0.88rem;
+  color: #475569;
+}
+
+.btn-editar-mini, .btn-guardar-mini {
+  margin-top: 10px;
+  background: #059669;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancelar-mini {
+  margin-left: 8px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+/* BARRA FLOTANTE DE ACEPTAR TOTAL */
+.barra-aceptar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #e2e8f0;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.barra-aceptar.activa {
+  transform: translateY(0);
+}
+
+.resumen-asientos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge-count {
+  background: #059669;
+  color: #ffffff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.texto-asientos {
+  font-size: 0.95rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.btn-aceptar-total {
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-aceptar-total:hover:not(:disabled) {
+  background: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
+}
+
+.btn-aceptar-total:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-aceptar-total .separador {
+  opacity: 0.6;
+}
+
+.btn-aceptar-total .monto-total {
+  font-weight: 800;
+}
+
+.btn-aceptar-total .flecha {
+  margin-left: 4px;
+  transition: transform 0.2s ease;
+}
+
+.btn-aceptar-total:hover .flecha {
+  transform: translateX(3px);
+}
+
+/* ============================================================ */
+/* PASO 2: CHECKOUT (PASAJEROS + DETALLES + PAGO)               */
+/* ============================================================ */
+.checkout-contenedor {
+  animation: fadeIn 0.3s ease;
+}
+
+.checkout-navegacion {
+  margin-bottom: 20px;
+}
+
+.btn-volver-croquis {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-volver-croquis:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+@media (max-width: 960px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Columna Izquierda: Información de pasajeros */
+.col-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-pasajeros-info, .card-metodos-pago {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  padding: 22px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.card-header-pasajeros {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.card-header-pasajeros h3, .card-metodos-pago h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.badge-ida {
+  background: #059669;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* Lista de filas de pasajeros */
+.lista-pasajeros-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fila-pasajero-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  transition: border-color 0.2s ease;
+}
+
+.fila-pasajero-card:focus-within {
+  border-color: #059669;
+  background: #ffffff;
+}
+
+.pasajero-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.asiento-badge-num {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.asiento-titulo {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.pasajero-inputs-grid {
+  display: grid;
+  grid-template-columns: 85px 120px 1fr 1fr 110px;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .pasajero-inputs-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.pasajero-inputs-grid label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.pasajero-inputs-grid input, .pasajero-inputs-grid select {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  outline: none;
+  background: #ffffff;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.pasajero-inputs-grid input:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+}
+
+.input-with-loader {
+  position: relative;
+}
+
+.mini-spinner {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border: 2px solid #cbd5e1;
+  border-top-color: #059669;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.mensaje-aviso-reniec {
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: #d97706;
+  background: #fffbeb;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* Métodos de Pago */
+.card-metodos-pago h3 {
+  margin-bottom: 14px;
+}
+
+.metodos-pago-opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.opcion-pago-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #ffffff;
+}
+
+.opcion-pago-item:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.opcion-pago-item.seleccionada {
+  border-color: #059669;
+  background: #f0fdf4;
+}
+
+.opcion-pago-item input[type="radio"] {
+  accent-color: #059669;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.opcion-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.opcion-icon {
+  font-size: 1.6rem;
+}
+
+.opcion-textos {
+  display: flex;
+  flex-direction: column;
+}
+
+.opcion-textos strong {
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.opcion-textos span {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.titulo-con-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-yape {
+  background: #73228b;
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.badge-plin {
+  background: #00d2b5;
+  color: #00332c;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.alerta-error-pago {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+}
+
+.btn-confirmar-pagar {
+  width: 100%;
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+}
+
+.btn-confirmar-pagar:hover:not(:disabled) {
+  background: #047857;
+  transform: translateY(-1px);
+}
+
+.btn-confirmar-pagar:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Columna Derecha: Detalles de la compra */
+.card-detalles-fija {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  position: sticky;
+  top: 20px;
+}
+
+.detalles-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px 12px;
+}
+
+.detalles-top h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.tag-tipo-viaje {
+  background: #059669;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.empresa-sub {
+  padding: 0 20px 14px;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  color: #64748b;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.empresa-sub strong {
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.trayecto-info {
+  padding: 16px 20px;
+}
+
+.punto-ruta {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.punto-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+.punto-dot.origen {
+  background: #059669;
+}
+
+.punto-dot.destino {
+  background: #0284c7;
+}
+
+.linea-trayecto {
+  width: 2px;
+  height: 22px;
+  background: #cbd5e1;
+  margin-left: 5px;
+}
+
+.punto-textos strong {
+  display: block;
+  font-size: 0.92rem;
+  color: #0f172a;
+}
+
+.punto-textos small {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.detalles-bus-info {
+  padding: 0 20px 14px;
+  font-size: 0.82rem;
+  color: #475569;
+}
+
+.detalles-bus-info p {
+  margin: 4px 0;
+}
+
+.divisor-line {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 0 20px;
+}
+
+.desglose-costos {
+  padding: 14px 20px;
+}
+
+.fila-costo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.fila-costo.descuento {
+  color: #94a3b8;
+}
+
+.banner-total-verde {
+  background: #059669;
+  color: #ffffff;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lbl-total {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.val-total {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+/* ============================================================ */
+/* PASO 3: PANTALLA DE ÉXITO                                    */
+/* ============================================================ */
+.pantalla-exito {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.card-exito {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 36px 30px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.icono-check-grande {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+}
+
+.card-exito h2 {
+  margin: 0 0 8px 0;
+  color: #0f172a;
+  font-size: 1.5rem;
+}
+
+.sub-exito {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.resumen-boletos-lista {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.asientos-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.boleto-chip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  padding: 6px 10px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.chip-n {
+  font-weight: 700;
+  color: #059669;
+}
+
+.chip-nombre {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.chip-dni {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.acciones-post-exito {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-ir-manifiesto {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-ir-manifiesto:hover {
+  background: #1e293b;
+}
+
+.btn-otra-venta {
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-otra-venta:hover {
+  background: #047857;
+}
+
+.btn-volver-lista {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-volver-lista:hover {
+  background: #e2e8f0;
+}
+
+/* Spinner */
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #059669;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }

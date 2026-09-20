@@ -1,0 +1,224 @@
+<!-- ====================== VISTA ADMINISTRADOR ====================== -->
+@if (esAdmin) {
+  <div class="contenedor-principal">
+
+    <!-- Encabezado Admin -->
+    <div class="encabezado-admin">
+      <div class="encabezado-admin-left">
+        <h2>Rutas & Horarios</h2>
+        <p>Gestiona las operaciones de despacho diario y monitorea el estado de las rutas.</p>
+      </div>
+      <div class="encabezado-admin-actions">
+        <button class="btn-nueva-ruta" (click)="abrirModal()">+ Nueva Ruta</button>
+      </div>
+    </div>
+
+    <!-- Lista de rutas programadas -->
+    <div class="seccion-rutas-admin">
+
+      @if (cargando) {
+        <div class="cargando-box">Cargando rutas programadas...</div>
+      }
+
+      @for (viaje of viajes; track viaje.idViaje) {
+        <div class="tarjeta-ruta-admin" [class.agotado]="viaje.asientosLibres === 0">
+
+          <div class="ruta-admin-hora">
+            <span class="hora">{{ viaje.fechaHora | date:'shortTime' }}</span>
+            <span class="etiqueta-sub">Salida</span>
+          </div>
+
+          <div class="ruta-admin-trayecto">
+            <span class="ruta-texto">{{ viaje.ciudadOrigen }} → {{ viaje.ciudadDestino }}</span>
+            <span class="detalles-bus">🚌 {{ viaje.placa }} | 👤 {{ viaje.choferNombre }}</span>
+          </div>
+
+          <div class="ruta-admin-ocupacion">
+            <span class="ocu-label">Ocupación</span>
+            <div class="barra-ocupacion">
+              <div class="barra-fill"
+                [style.width.%]="viaje.totalAsientos > 0 ? ((viaje.asientosOcupados / viaje.totalAsientos) * 100) : 0"
+                [class.barra-alta]="(viaje.asientosOcupados / viaje.totalAsientos) > 0.7">
+              </div>
+            </div>
+            <span class="ocu-texto">{{ viaje.asientosOcupados }}/{{ viaje.totalAsientos }}</span>
+          </div>
+
+          <div class="ruta-admin-estado">
+            @if (viaje.asientosLibres > 0) {
+              <span class="badge-activo">● Activo</span>
+            } @else {
+              <span class="badge-lleno">Completo</span>
+            }
+          </div>
+
+          <div class="ruta-admin-precio">
+            <span class="precio-monto">S/ {{ viaje.precio | number:'1.2-2' }}</span>
+          </div>
+
+          <div class="ruta-admin-accion">
+            <button class="btn-manifiesto-ruta" (click)="verManifiesto(viaje.idViaje)" title="Ver Manifiesto de Pasajeros">
+              📋 Manifiesto
+            </button>
+          </div>
+
+        </div>
+      } @empty {
+        @if (!cargando) {
+          <div class="vacio-box">No hay rutas programadas. ¡Crea la primera con el botón "+ Nueva Ruta"!</div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- ====== MODAL REGISTRAR NUEVA RUTA ====== -->
+  @if (mostrarModal) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+          <h3>Registrar Nueva Ruta</h3>
+          <button class="modal-close" (click)="cerrarModal()">✕</button>
+        </div>
+
+        <div class="modal-body">
+
+          <!-- Origen / Destino -->
+          <div class="modal-row">
+            <div class="modal-field">
+              <label>Origen</label>
+              <select [(ngModel)]="nuevaRuta.ciudadOrigenId">
+                <option [ngValue]="null" disabled>Ej. Cajamarca</option>
+                @for (c of ciudades; track c.idCiudad) {
+                  <option [ngValue]="c.idCiudad">{{ c.nombre }}</option>
+                }
+              </select>
+            </div>
+            <div class="modal-field">
+              <label>Destino</label>
+              <select [(ngModel)]="nuevaRuta.ciudadDestinoId">
+                <option [ngValue]="null" disabled>Ej. Celendín</option>
+                @for (c of ciudades; track c.idCiudad) {
+                  <option [ngValue]="c.idCiudad">{{ c.nombre }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Vehículo / Conductor -->
+          <div class="modal-row">
+            <div class="modal-field">
+              <label>Asignación de Flota</label>
+              <select [(ngModel)]="nuevaRuta.vehiculoId">
+                <option [ngValue]="null" disabled>Seleccionar vehículo</option>
+                @for (v of vehiculos; track v.idVehiculo) {
+                  <option [ngValue]="v.idVehiculo">{{ v.placa }} — {{ v.marca }} {{ v.modelo }}</option>
+                }
+              </select>
+            </div>
+            <div class="modal-field">
+              <label>Conductor</label>
+              <select [(ngModel)]="nuevaRuta.choferId">
+                <option [ngValue]="null" disabled>Nombre del conductor</option>
+                @for (ch of choferes; track ch.idChofer) {
+                  <option [ngValue]="ch.idChofer">{{ ch.nombreCompleto }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Hora / Precio -->
+          <div class="modal-row">
+            <div class="modal-field">
+              <label>Hora de Salida</label>
+              <input type="time" [(ngModel)]="nuevaRuta.horaLocal" />
+            </div>
+            <div class="modal-field">
+              <label>Precio Pasaje (S/.)</label>
+              <input type="number" [(ngModel)]="nuevaRuta.precio" placeholder="S/. 0.00" min="0" step="0.50" />
+            </div>
+          </div>
+
+          <!-- Mensajes -->
+          @if (mensajeError) {
+            <div class="modal-error">⚠ {{ mensajeError }}</div>
+          }
+          @if (mensajeExito) {
+            <div class="modal-exito">✅ {{ mensajeExito }}</div>
+          }
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancelar" (click)="cerrarModal()" [disabled]="guardando">Cancelar</button>
+          <button class="btn-guardar" (click)="guardarRuta()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar Ruta' }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+}
+
+<!-- ====================== VISTA VENTANILLA ====================== -->
+@if (!esAdmin) {
+  <div class="contenedor-principal">
+    <div class="encabezado">
+      <h2>Venta de Pasajes</h2>
+      <p>Consulta disponibilidad y emite boletos en tiempo real.</p>
+    </div>
+
+    <div class="seccion-salidas">
+      <h3>Salidas Disponibles</h3>
+
+      @if (cargando) {
+        <div class="cargando-box">Cargando itinerarios disponibles...</div>
+      }
+
+      @for (viaje of viajes; track viaje.idViaje) {
+        <div class="tarjeta-viaje" [class.agotado]="viaje.asientosLibres === 0">
+
+          <div class="bloque-hora">
+            <span class="hora">{{ viaje.fechaHora | date:'shortTime' }}</span>
+            <span class="etiqueta-sub">Salida</span>
+          </div>
+
+          <div class="bloque-trayecto">
+            <span class="ruta-texto">{{ viaje.ciudadOrigen }} ➔ {{ viaje.ciudadDestino }}</span>
+            <span class="detalles-bus">Bus: {{ viaje.placa }} | Chofer: {{ viaje.choferNombre }}</span>
+          </div>
+
+          <div class="bloque-precio">
+            @if (viaje.asientosLibres > 0) {
+              <span class="badge-libres">{{ viaje.asientosLibres }} libres</span>
+            } @else {
+              <span class="badge-agotado">Agotado</span>
+            }
+            <div class="monto">S/ {{ viaje.precio | number:'1.2-2' }}</div>
+          </div>
+
+          <div class="bloque-accion">
+            <button
+              class="btn-seleccionar"
+              [disabled]="viaje.asientosLibres === 0"
+              (click)="seleccionarViaje(viaje.idViaje)">
+              {{ viaje.asientosLibres > 0 ? 'Seleccionar' : 'No Disponible' }}
+            </button>
+            <button
+              class="btn-manifiesto-ventanilla"
+              (click)="verManifiesto(viaje.idViaje)"
+              title="Ver Manifiesto de Pasajeros">
+              📋
+            </button>
+          </div>
+
+        </div>
+      } @empty {
+        @if (!cargando) {
+          <div class="vacio-box">No hay salidas programadas por el administrador en este momento.</div>
+        }
+      }
+    </div>
+  </div>
+}

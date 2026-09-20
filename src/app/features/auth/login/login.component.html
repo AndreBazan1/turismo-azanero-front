@@ -1,0 +1,129 @@
+<div class="login-wrapper">
+  <!-- Fondo con elementos decorativos -->
+  <div class="bg-shape shape-1"></div>
+  <div class="bg-shape shape-2"></div>
+
+  <div class="login-container">
+    <div class="login-card">
+      
+      <!-- Encabezado de Marca -->
+      <div class="brand-header">
+        <div class="brand-badge">
+          <span class="badge-icon">🚌</span>
+          <span class="badge-text">RutaExpress v2.0</span>
+        </div>
+        <h1 class="brand-title">Turismo Azañero</h1>
+        <p class="brand-subtitle">Gestión de Rutas, Pasajes y Flota Regional</p>
+      </div>
+
+      <!-- Selector de Rol -->
+      <div class="role-selector-container">
+        <label class="role-label">Selecciona tu perfil de acceso</label>
+        <div class="role-grid">
+          @for (item of rolesDisponibles; track item.id) {
+            <button
+              type="button"
+              class="role-pill"
+              [class.active]="loginForm.get('rol')?.value === item.id"
+              (click)="seleccionarRol(item.id)">
+              <span class="role-icon">{{ item.icon }}</span>
+              <span class="role-name">{{ item.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Alerta de Error -->
+      @if (mensajeError) {
+        <div class="error-banner">
+          <span class="error-icon">⚠️</span>
+          <span class="error-text">{{ mensajeError }}</span>
+        </div>
+      }
+
+      <!-- Formulario de Acceso -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        
+        <!-- Campo DNI -->
+        <div class="input-group">
+          <label for="dni">DNI de Usuario</label>
+          <div class="input-field" [class.has-error]="loginForm.get('dni')?.invalid && loginForm.get('dni')?.touched">
+            <span class="field-icon">🪪</span>
+            <input
+              id="dni"
+              type="text"
+              formControlName="dni"
+              placeholder="Ingresa tu DNI (8 dígitos)"
+              maxlength="8"
+              autocomplete="username" />
+          </div>
+          @if (loginForm.get('dni')?.invalid && loginForm.get('dni')?.touched) {
+            <small class="field-error">El DNI debe tener exactamente 8 números.</small>
+          }
+        </div>
+
+        <!-- Campo Contraseña -->
+        <div class="input-group">
+          <label for="password">Contraseña</label>
+          <div class="input-field" [class.has-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            <span class="field-icon">🔒</span>
+            <input
+              id="password"
+              [type]="mostrarPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Ingresa tu clave de acceso"
+              autocomplete="current-password" />
+            <button
+              type="button"
+              class="btn-toggle-eye"
+              (click)="toggleMostrarPassword()"
+              tabindex="-1">
+              {{ mostrarPassword ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <small class="field-error">La contraseña es obligatoria.</small>
+          }
+        </div>
+
+        <!-- Botón de Envío -->
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="cargando">
+          @if (cargando) {
+            <span class="spinner"></span>
+            <span>Verificando credenciales...</span>
+          } @else {
+            <span>Ingresar al Sistema</span>
+            <span class="arrow-icon">➔</span>
+          }
+        </button>
+      </form>
+
+      <!-- Atajos rápidos para desarrollo / testing -->
+      <div class="dev-quick-fill">
+        <span class="quick-title">⚡ Cuentas de prueba:</span>
+        <div class="quick-buttons">
+          <button
+            type="button"
+            class="chip-btn"
+            (click)="cargarCredencialesPrueba('VENTANILLA')">
+            🎫 Cajero (77777777)
+          </button>
+          <button
+            type="button"
+            class="chip-btn"
+            (click)="cargarCredencialesPrueba('ADMINISTRADOR')">
+            🛡️ Admin (88888888)
+          </button>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <p>© 2026 Turismo Azañero - Cajamarca & Celendín</p>
+      </div>
+
+    </div>
+  </div>
+</div>

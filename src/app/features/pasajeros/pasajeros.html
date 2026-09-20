@@ -1,0 +1,302 @@
+<div class="modulo-pasajeros-container">
+
+  <!-- ============================================================ -->
+  <!-- MODO 1: LISTADO DE VIAJES PROGRAMADOS                        -->
+  <!-- ============================================================ -->
+  @if (modoVista === 'LISTA_VIAJES') {
+    <div class="vista-lista-viajes">
+      
+      <div class="encabezado-pasajeros">
+        <div class="titulos">
+          <h2>Pasajeros & Manifiestos de Salida</h2>
+          <p>Consulta los manifiestos de ruta, croquis de ocupación y lista oficial de pasajeros para cada viaje.</p>
+        </div>
+
+        <div class="busqueda-viajes-box">
+          <span class="lupa-icon">🔍</span>
+          <input 
+            type="text" 
+            [(ngModel)]="busquedaViaje" 
+            placeholder="Buscar por ciudad, bus o chofer..." />
+        </div>
+      </div>
+
+      @if (cargandoViajes) {
+        <div class="loading-box">
+          <div class="spinner"></div>
+          <p>Cargando itinerarios programados...</p>
+        </div>
+      } @else {
+        <div class="grid-viajes-manifiesto">
+          @for (viaje of viajesFiltrados; track viaje.idViaje) {
+            <div class="card-viaje-item">
+              <div class="card-viaje-top">
+                <div class="ruta-badge">
+                  <span class="origen">{{ viaje.ciudadOrigen }}</span>
+                  <span class="flecha-ruta">➔</span>
+                  <span class="destino">{{ viaje.ciudadDestino }}</span>
+                </div>
+                <span class="badge-hora">🕒 {{ viaje.fechaHora | date:'shortTime' }}</span>
+              </div>
+
+              <div class="card-viaje-detalles">
+                <div class="dato">
+                  <span class="lbl">Fecha:</span>
+                  <strong>{{ viaje.fechaHora | date:'dd/MM/yyyy' }}</strong>
+                </div>
+                <div class="dato">
+                  <span class="lbl">Unidad:</span>
+                  <strong>{{ viaje.placa }}</strong>
+                </div>
+                <div class="dato">
+                  <span class="lbl">Chofer:</span>
+                  <strong>{{ viaje.choferNombre || 'No asignado' }}</strong>
+                </div>
+                <div class="dato">
+                  <span class="lbl">Pasaje:</span>
+                  <strong class="precio-txt">S/ {{ viaje.precio | number:'1.2-2' }}</strong>
+                </div>
+              </div>
+
+              <!-- Barra de Ocupación -->
+              <div class="ocupacion-contenedor">
+                <div class="ocupacion-labels">
+                  <span>Ocupación</span>
+                  <strong>{{ viaje.asientosOcupados }} / {{ viaje.totalAsientos || 15 }} pax</strong>
+                </div>
+                <div class="progreso-bar">
+                  <div 
+                    class="progreso-fill" 
+                    [style.width.%]="(viaje.asientosOcupados / (viaje.totalAsientos || 15)) * 100">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Acciones del viaje -->
+              <div class="card-viaje-acciones">
+                <button class="btn-ver-manifiesto" (click)="abrirManifiesto(viaje)">
+                  📋 Ver Manifiesto
+                </button>
+                <button class="btn-ir-croquis" (click)="irAVenderPasaje(viaje.idViaje)">
+                  🎟️ Croquis
+                </button>
+              </div>
+
+            </div>
+          } @empty {
+            <div class="empty-box">
+              <span class="empty-icon">🚐</span>
+              <p>No se encontraron viajes programados.</p>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  }
+
+  <!-- ============================================================ -->
+  <!-- MODO 2: MANIFIESTO DE SALIDA DETALLADO (DEPARTURE MANIFESTO) -->
+  <!-- ============================================================ -->
+  @if (modoVista === 'MANIFIESTO') {
+    <div class="vista-manifiesto-detalle">
+      
+      <!-- Barra Superior de Navegación y Acciones -->
+      <div class="manifiesto-topbar no-print">
+        <button class="btn-volver-viajes" (click)="volverAListaViajes()">
+          ← Volver a Viajes
+        </button>
+
+        <div class="topbar-acciones-derecha">
+          <button class="btn-imprimir" (click)="imprimirManifiesto()">
+            🖨️ Imprimir Manifiesto
+          </button>
+          <button class="btn-vender-shortcut" (click)="irAVenderPasaje()">
+            🎟️ Vender Pasaje
+          </button>
+        </div>
+      </div>
+
+      <!-- Encabezado del Manifiesto Oficial -->
+      <div class="manifiesto-header">
+        <div class="empresa-titulo">
+          <span class="tag-sub">DEPARTURE MANIFESTO</span>
+          <h1>{{ viajeSeleccionado?.ciudadOrigen }} — {{ viajeSeleccionado?.ciudadDestino }}</h1>
+        </div>
+        <div class="agencia-sello">
+          <span class="marca-empresa">Turismo Azañero</span>
+          <span class="oficina-txt">Oficina Cajamarca</span>
+        </div>
+      </div>
+
+      @if (cargandoManifiesto) {
+        <div class="loading-box">
+          <div class="spinner"></div>
+          <p>Cargando datos del manifiesto y croquis...</p>
+        </div>
+      } @else {
+        
+        <!-- Fila Superior: Trip Details + Seat Map -->
+        <div class="grid-resumen-manifiesto">
+          
+          <!-- TARJETA 1: TRIP DETAILS -->
+          <div class="card-trip-details">
+            <h3>Detalles del Viaje</h3>
+
+            <div class="trip-datos-grid">
+              <div class="trip-dato-item">
+                <span class="dato-lbl">Fecha de Salida</span>
+                <strong class="dato-val">{{ viajeSeleccionado?.fechaHora | date:'EEEE, d MMMM yyyy' }}</strong>
+              </div>
+              <div class="trip-dato-item">
+                <span class="dato-lbl">Hora</span>
+                <strong class="dato-val">{{ viajeSeleccionado?.fechaHora | date:'shortTime' }}</strong>
+              </div>
+              <div class="trip-dato-item">
+                <span class="dato-lbl">Vehículo</span>
+                <strong class="dato-val">Unidad {{ viajeSeleccionado?.placa }} ({{ totalCapacidad }} pax)</strong>
+              </div>
+              <div class="trip-dato-item">
+                <span class="dato-lbl">Conductor Asignado</span>
+                <strong class="dato-val">{{ viajeSeleccionado?.choferNombre || 'Por asignar' }}</strong>
+              </div>
+            </div>
+
+            <div class="ocupacion-seccion">
+              <div class="ocupacion-header-mini">
+                <span>Ocupación de Asientos</span>
+                <strong>{{ totalAsignados }} / {{ totalCapacidad }}</strong>
+              </div>
+              <div class="progreso-bar grande">
+                <div 
+                  class="progreso-fill" 
+                  [style.width.%]="porcentajeOcupacion">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TARJETA 2: SEAT MAP (CROQUIS VISUAL) -->
+          <div class="card-seat-map">
+            <div class="seat-map-header">
+              <h3>Mapa de Asientos</h3>
+              <div class="seat-map-leyenda">
+                <span class="leyenda-item"><span class="caja-dot ocupado"></span> Asignado</span>
+                <span class="leyenda-item"><span class="caja-dot libre"></span> Disponible</span>
+              </div>
+            </div>
+
+            <div class="croquis-visual-combi">
+              <div class="cabina-chofer-visual">
+                <span class="chofer-badge">👨‍✈️ Chofer</span>
+              </div>
+
+              <div class="asientos-grid-mini">
+                @for (fila of filasManifiesto; track fila.numeroAsiento) {
+                  <div 
+                    class="asiento-mini" 
+                    [class.asignado]="fila.estado === 'ASIGNADO'"
+                    [class.disponible]="fila.estado === 'DISPONIBLE'"
+                    [title]="'Asiento ' + fila.numeroAsiento + ': ' + fila.nombrePasajero">
+                    {{ fila.numeroAsiento }}
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Fila Inferior: Passenger List -->
+        <div class="card-passenger-list">
+          
+          <div class="passenger-list-header">
+            <div class="titulo-con-conteo">
+              <h3>Lista de Pasajeros</h3>
+              <span class="badge-total-pasajeros">{{ totalAsignados }} registrados</span>
+            </div>
+
+            <div class="buscador-pasajeros-input no-print">
+              <span class="lupa-mini">🔍</span>
+              <input 
+                type="text" 
+                [(ngModel)]="filtroPasajero" 
+                placeholder="Buscar por nombre o DNI..." />
+            </div>
+          </div>
+
+          <div class="tabla-pasajeros-wrapper">
+            <table class="tabla-pasajeros">
+              <thead>
+                <tr>
+                  <th class="col-asiento">ASIENTO</th>
+                  <th class="col-nombre">NOMBRE COMPLETO</th>
+                  <th class="col-dni">DNI / DOCUMENTO</th>
+                  <th class="col-telefono">TELÉFONO</th>
+                  <th class="col-precio">TARIFA</th>
+                  <th class="col-estado">ESTADO</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (fila of filasFiltradas; track fila.numeroAsiento) {
+                  <tr [class.fila-disponible]="fila.estado === 'DISPONIBLE'">
+                    <td class="col-asiento">
+                      <span class="asiento-pill" [class.ocupado-pill]="fila.estado === 'ASIGNADO'">
+                        {{ fila.numeroAsiento }}
+                      </span>
+                    </td>
+                    <td class="col-nombre">
+                      @if (fila.estado === 'ASIGNADO') {
+                        <strong>{{ fila.nombrePasajero }}</strong>
+                      } @else {
+                        <span class="texto-disponible">Disponible</span>
+                      }
+                    </td>
+                    <td class="col-dni">
+                      {{ fila.dniPasajero }}
+                    </td>
+                    <td class="col-telefono">
+                      {{ fila.telefono }}
+                    </td>
+                    <td class="col-precio">
+                      @if (fila.estado === 'ASIGNADO') {
+                        S/ {{ fila.precio | number:'1.2-2' }}
+                      } @else {
+                        <span class="guion">-</span>
+                      }
+                    </td>
+                    <td class="col-estado">
+                      @if (fila.estado === 'ASIGNADO') {
+                        <span class="badge-estado-ocupado">Emitido</span>
+                      } @else {
+                        <button class="btn-asignar-mini no-print" (click)="irAVenderPasaje()">
+                          + Asignar
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pie del Manifiesto para Impresión -->
+          <div class="pie-impresion-oficial">
+            <div class="firma-box">
+              <div class="linea-firma"></div>
+              <span>Firma Conductor</span>
+            </div>
+            <div class="firma-box">
+              <div class="linea-firma"></div>
+              <span>Control Despacho / Ventanilla</span>
+            </div>
+          </div>
+
+        </div>
+
+      }
+
+    </div>
+  }
+
+</div>

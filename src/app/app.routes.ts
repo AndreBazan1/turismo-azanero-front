@@ -1,14 +1,22 @@
 import { Routes } from '@angular/router';
+import { LoginComponent } from './features/auth/login/login.component';
 import { DashboardComponent } from './features/dashboard/dashboard';
-import { Viajes } from './features/viajes/viajes'; 
+import { RutasDisponiblesComponent } from './features/rutas-disponibles/rutas-disponibles';
 import { VentaPasajes } from './features/venta-pasajes/venta-pasajes';
+import { FlotaComponent } from './features/flota/flota';
+import { PasajerosComponent } from './features/pasajeros/pasajeros';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'rutas', component: DashboardComponent }, // Redirección temporal mientras creamos la vista específica
-  { path: 'flota', component: DashboardComponent },
-  { path: 'pasajeros', component: DashboardComponent },
-  { path: 'viajes/:id/croquis', component: VentaPasajes },
-  { path: '**', redirectTo: 'dashboard' }
-];
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+  { path: 'rutas', component: RutasDisponiblesComponent, canActivate: [authGuard] },
+  { path: 'venta-pasajes/:id', component: VentaPasajes, canActivate: [authGuard] },
+  { path: 'viajes/:id/croquis', component: VentaPasajes, canActivate: [authGuard] },
+  { path: 'flota', component: FlotaComponent, canActivate: [authGuard, roleGuard(['ADMINISTRADOR'])] },
+  { path: 'pasajeros', component: PasajerosComponent, canActivate: [authGuard] },
+  { path: 'pasajeros/:id', component: PasajerosComponent, canActivate: [authGuard] },
+  { path: '**', redirectTo: 'login' }
+];

@@ -1,25 +1,393 @@
 <div class="contenedor-venta">
-  <h2>Croquis del Viaje</h2>
 
-<div class="croquis-container">
-  @for (asiento of asientos; track asiento.idAsiento) {
-    <button 
-      class="asiento" 
-      [ngClass]="{
-        'chofer': asiento.esChofer,
-        'libre': asiento.estado === 'LIBRE',
-        'ocupado': asiento.estado === 'OCUPADO',
-        'seleccionado': asientoSeleccionado?.idAsiento === asiento.idAsiento
-      }"
-      [disabled]="asiento.estado === 'OCUPADO' || asiento.esChofer"
-      (click)="seleccionarAsiento(asiento)">
-      {{ asiento.esChofer ? 'Chofer' : asiento.numero }}
-    </button>
+  <!-- ============================================================ -->
+  <!-- PASO 1: SELECCIÓN DE ASIENTOS (CROQUIS DE LA COMBI)          -->
+  <!-- ============================================================ -->
+  @if (pasoActual === 'CROQUIS') {
+    <div class="encabezado-croquis">
+      <button class="btn-volver-rutas" (click)="volverARutas()">
+        ← Volver a Rutas
+      </button>
+      <div class="info-viaje-resumen">
+        <h2>{{ viaje?.ciudadOrigen || 'Origen' }} ➔ {{ viaje?.ciudadDestino || 'Destino' }}</h2>
+        <p>
+          <span>🕒 {{ viaje?.fechaHora | date:'shortTime' }}</span> • 
+          <span>🚌 Bus: {{ viaje?.placa || '---' }}</span> • 
+          <span>👨‍✈️ Chofer: {{ viaje?.choferNombre || '---' }}</span> • 
+          <span class="precio-tag">S/ {{ precioPasaje | number:'1.2-2' }} por pasaje</span>
+        </p>
+      </div>
+    </div>
+
+    @if (cargandoCroquis) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando croquis de la combi...</p>
+      </div>
+    } @else {
+      <div class="croquis-wrapper">
+        <div class="croquis-combi">
+          <div class="cabecera-combi">
+            <span class="icon-frente">🚐</span> Frente / Cabina de Conducción
+          </div>
+
+          <div class="grid-combi">
+            <!-- Chofer fijo en la esquina superior izquierda -->
+            <div class="asiento chofer">
+              <span class="asiento-icon">👨‍✈️</span>
+              <span class="asiento-txt">Chofer</span>
+            </div>
+            <div class="pasillo"></div>
+
+            <!-- Asientos reales según capacidad -->
+            @for (asiento of asientos; track asiento.idAsiento) {
+              <button 
+                class="asiento" 
+                [ngClass]="{
+                  'libre': asiento.estado === 'LIBRE',
+                  'ocupado': asiento.estado === 'OCUPADO',
+                  'seleccionado': estaSeleccionado(asiento)
+                }"
+                (click)="toggleAsiento(asiento)">
+                <span class="num">{{ asiento.numero }}</span>
+                @if (estaSeleccionado(asiento)) {
+                  <span class="check-mark">✓</span>
+                }
+              </button>
+            }
+          </div>
+
+          <!-- Leyenda -->
+          <div class="leyenda">
+            <span class="item"><i class="dot libre"></i> Disponible</span>
+            <span class="item"><i class="dot seleccionado"></i> Seleccionado</span>
+            <span class="item"><i class="dot ocupado"></i> Ocupado</span>
+          </div>
+        </div>
+
+        <!-- Detalle de asiento ocupado si se consulta individualmente -->
+        @if (asientoOcupadoSeleccionado) {
+          <div class="card-ocupado-detalle">
+            <div class="ocupado-header">
+              <h4>📋 Boleto Emitido — Asiento N° {{ asientoOcupadoSeleccionado.numero }}</h4>
+              <button class="btn-cerrar-mini" (click)="cerrarDetalleOcupado()">✕</button>
+            </div>
+            @if (!modoEdicionOcupado) {
+              <div class="datos-consulta">
+                <p><strong>DNI:</strong> {{ dniPasajeroOcupado || 'No registrado' }}</p>
+                <p><strong>Pasajero:</strong> {{ nombrePasajeroOcupado || 'No registrado' }}</p>
+                <p><strong>Precio:</strong> S/ {{ precioPasaje | number:'1.2-2' }}</p>
+                <button class="btn-editar-mini" (click)="activarEdicionOcupado()">✏️ Modificar Datos</button>
+              </div>
+            } @else {
+              <div class="form-edicion-ocupado">
+                <label>DNI:</label>
+                <input type="text" [(ngModel)]="dniPasajeroOcupado" maxlength="8" />
+                <label>Pasajero:</label>
+                <input type="text" [(ngModel)]="nombrePasajeroOcupado" />
+                <div class="btns-edicion">
+                  <button class="btn-guardar-mini" (click)="guardarEdicionOcupado()">Guardar</button>
+                  <button class="btn-cancelar-mini" (click)="cerrarDetalleOcupado()">Cancelar</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Barra Flotante Inferior de Aceptación con Total Dinámico -->
+      <div class="barra-aceptar" [class.activa]="asientosSeleccionados.length > 0">
+        <div class="resumen-asientos">
+          <span class="badge-count">{{ asientosSeleccionados.length }}</span>
+          <span class="texto-asientos">
+            {{ asientosSeleccionados.length === 1 ? 'asiento seleccionado' : 'asientos seleccionados' }}
+            @if (asientosSeleccionados.length > 0) {
+              (N° {{ listaNumerosAsientos }})
+            }
+          </span>
+        </div>
+
+        <button 
+          class="btn-aceptar-total" 
+          [disabled]="asientosSeleccionados.length === 0"
+          (click)="continuarAPago()">
+          <span>ACEPTAR</span>
+          <span class="separador">•</span>
+          <span class="monto-total">Total: S/ {{ totalPagar | number:'1.2-2' }}</span>
+          <span class="flecha">➔</span>
+        </button>
+      </div>
+    }
   }
-</div>
 
-@if (asientoSeleccionado) {
-  <div class="resumen-seleccion">
-    <p>Asiento seleccionado: <strong>N° {{ asientoSeleccionado.numero }}</strong></p>
-  </div>
-}
+  <!-- ============================================================ -->
+  <!-- PASO 2: INFORMACIÓN DE PASAJEROS Y MODO DE PAGO (CHECKOUT)   -->
+  <!-- ============================================================ -->
+  @if (pasoActual === 'PAGO') {
+    <div class="checkout-contenedor">
+      
+      <div class="checkout-navegacion">
+        <button class="btn-volver-croquis" (click)="volverACroquis()">
+          ← Volver a selección de asientos
+        </button>
+      </div>
+
+      <div class="checkout-grid">
+        
+        <!-- COLUMNA IZQUIERDA: FORMULARIO PASAJEROS + OPCIONES DE PAGO -->
+        <div class="col-formulario">
+          
+          <div class="card-pasajeros-info">
+            <div class="card-header-pasajeros">
+              <h3>Información de los pasajeros</h3>
+              <span class="badge-ida">IDA</span>
+            </div>
+
+            <!-- Listado de cada pasajero por asiento seleccionado -->
+            <div class="lista-pasajeros-campos">
+              @for (p of pasajeros; track p.numeroAsiento; let i = $index) {
+                <div class="fila-pasajero-card">
+                  <div class="pasajero-card-header">
+                    <div class="asiento-badge-num">
+                      <span class="label-n">N°</span>
+                      <span class="val-n">{{ p.numeroAsiento }}</span>
+                    </div>
+                    <span class="asiento-titulo">Pasajero para Asiento {{ p.numeroAsiento }}</span>
+                  </div>
+
+                  <div class="pasajero-inputs-grid">
+                    <!-- Tipo Documento -->
+                    <div class="campo-doc-tipo">
+                      <label>Tipo Doc.</label>
+                      <select [(ngModel)]="p.tipoDocumento" disabled>
+                        <option value="DNI">DNI</option>
+                      </select>
+                    </div>
+
+                    <!-- N° Documento -->
+                    <div class="campo-doc-numero">
+                      <label>N° Documento</label>
+                      <div class="input-with-loader">
+                        <input 
+                          type="text" 
+                          [(ngModel)]="p.dniPasajero" 
+                          (input)="buscarDniPasajero(p)"
+                          placeholder="8 dígitos" 
+                          maxlength="8" />
+                        @if (p.cargandoReniec) {
+                          <span class="mini-spinner" title="Consultando RENIEC..."></span>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Nombre -->
+                    <div class="campo-nombre">
+                      <label>Nombre</label>
+                      <input 
+                        type="text" 
+                        [(ngModel)]="p.nombre" 
+                        placeholder="Nombres" />
+                    </div>
+
+                    <!-- Apellido -->
+                    <div class="campo-apellido">
+                      <label>Apellido</label>
+                      <input 
+                        type="text" 
+                        [(ngModel)]="p.apellido" 
+                        placeholder="Apellidos" />
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="campo-telefono">
+                      <label>Teléfono</label>
+                      <input 
+                        type="tel" 
+                        [(ngModel)]="p.telefono" 
+                        placeholder="9XXXXXXXX" 
+                        maxlength="9" />
+                    </div>
+                  </div>
+
+                  @if (p.errorReniec) {
+                    <div class="mensaje-aviso-reniec">
+                      ℹ️ {{ p.errorReniec }}
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- SECCIÓN: OPCIONES DE PAGO -->
+          <div class="card-metodos-pago">
+            <h3>Opciones de pago</h3>
+
+            <div class="metodos-pago-opciones">
+              <!-- Opción Efectivo -->
+              <label 
+                class="opcion-pago-item" 
+                [class.seleccionada]="metodoPago === 'EFECTIVO'">
+                <input 
+                  type="radio" 
+                  name="metodoPago" 
+                  value="EFECTIVO" 
+                  [(ngModel)]="metodoPago" />
+                <div class="opcion-content">
+                  <div class="opcion-icon">💵</div>
+                  <div class="opcion-textos">
+                    <strong>Pago en Efectivo (Ventanilla)</strong>
+                    <span>Cobro inmediato en caja / efectivo físico</span>
+                  </div>
+                </div>
+              </label>
+
+              <!-- Opción Yape / Plin -->
+              <label 
+                class="opcion-pago-item" 
+                [class.seleccionada]="metodoPago === 'YAPE'">
+                <input 
+                  type="radio" 
+                  name="metodoPago" 
+                  value="YAPE" 
+                  [(ngModel)]="metodoPago" />
+                <div class="opcion-content">
+                  <div class="opcion-icon yape-icon">📱</div>
+                  <div class="opcion-textos">
+                    <div class="titulo-con-badges">
+                      <strong>Paga con Yape o Plin</strong>
+                      <span class="badge-yape">Yape</span>
+                      <span class="badge-plin">Plin</span>
+                    </div>
+                    <span>Transferencia rápida vía billetera digital</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            @if (mensajeErrorPago) {
+              <div class="alerta-error-pago">
+                ⚠️ {{ mensajeErrorPago }}
+              </div>
+            }
+
+            <div class="acciones-pago-final">
+              <button 
+                class="btn-confirmar-pagar" 
+                [disabled]="procesandoPago || !formularioValido"
+                (click)="confirmarPago()">
+                @if (procesandoPago) {
+                  <span>⏳ Procesando emisión de pasajes...</span>
+                } @else {
+                  <span>Pagar S/ {{ totalPagar | number:'1.2-2' }}</span>
+                }
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COLUMNA DERECHA: DETALLES DE LA COMPRA -->
+        <div class="col-detalles-compra">
+          <div class="card-detalles-fija">
+            
+            <div class="detalles-top">
+              <h3>Detalles de la compra</h3>
+              <span class="tag-tipo-viaje">Ida</span>
+            </div>
+
+            <div class="empresa-sub">
+              <strong>Turismo Azañero</strong>
+              <span>{{ viaje?.fechaHora | date:'EEEE, d MMM, yyyy' }}</span>
+            </div>
+
+            <div class="trayecto-info">
+              <div class="punto-ruta">
+                <span class="punto-dot origen"></span>
+                <div class="punto-textos">
+                  <strong>{{ viaje?.ciudadOrigen }}</strong>
+                  <small>{{ viaje?.fechaHora | date:'shortTime' }}</small>
+                </div>
+              </div>
+              <div class="linea-trayecto"></div>
+              <div class="punto-ruta">
+                <span class="punto-dot destino"></span>
+                <div class="punto-textos">
+                  <strong>{{ viaje?.ciudadDestino }}</strong>
+                  <small>Llegada estimada</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="detalles-bus-info">
+              <p>🚌 <strong>Unidad:</strong> {{ viaje?.placa || 'Asignada' }}</p>
+              <p>👨‍✈️ <strong>Chofer:</strong> {{ viaje?.choferNombre || 'Asignado' }}</p>
+            </div>
+
+            <div class="divisor-line"></div>
+
+            <div class="desglose-costos">
+              <div class="fila-costo">
+                <span>{{ asientosSeleccionados.length }}x Pasajes (Asientos {{ listaNumerosAsientos }})</span>
+                <strong>S/ {{ totalPagar | number:'1.2-2' }}</strong>
+              </div>
+              <div class="fila-costo descuento">
+                <span>Descuento</span>
+                <span>S/ 0.00</span>
+              </div>
+            </div>
+
+            <div class="banner-total-verde">
+              <span class="lbl-total">Total</span>
+              <span class="val-total">S/ {{ totalPagar | number:'1.2-2' }}</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  }
+
+  <!-- ============================================================ -->
+  <!-- PASO 3: CONFIRMACIÓN Y EMISIÓN EXITOSA                       -->
+  <!-- ============================================================ -->
+  @if (pasoActual === 'EXITO') {
+    <div class="pantalla-exito">
+      <div class="card-exito">
+        <div class="icono-check-grande">✅</div>
+        <h2>¡Pasajes Emitidos con Éxito!</h2>
+        <p class="sub-exito">
+          Se registraron correctamente <strong>{{ boletosEmitidos.length }} boleto(s)</strong> para el viaje 
+          <strong>{{ viaje?.ciudadOrigen }} ➔ {{ viaje?.ciudadDestino }}</strong>.
+        </p>
+
+        <div class="resumen-boletos-lista">
+          <div class="asientos-tags">
+            @for (p of pasajeros; track p.numeroAsiento) {
+              <div class="boleto-chip">
+                <span class="chip-n">Asiento {{ p.numeroAsiento }}</span>
+                <span class="chip-nombre">{{ p.nombre }} {{ p.apellido }}</span>
+                <span class="chip-dni">DNI: {{ p.dniPasajero }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="acciones-post-exito">
+          <button class="btn-ir-manifiesto" (click)="irAManifiesto()">
+            📋 Ver Manifiesto de este Viaje
+          </button>
+          <button class="btn-otra-venta" (click)="nuevaVenta()">
+            ➕ Vender más pasajes
+          </button>
+          <button class="btn-volver-lista" (click)="volverARutas()">
+            🛣️ Ir a Lista de Rutas
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

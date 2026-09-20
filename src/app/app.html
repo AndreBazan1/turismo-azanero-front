@@ -1,2 +1,79 @@
-<h1>Turismo Azañero</h1>
-<router-outlet></router-outlet>
+@if (isLoginPage() || !authService.isAuthenticated()) {
+  <!-- Vista limpia de pantalla completa para Login -->
+  <router-outlet></router-outlet>
+} @else {
+  <div class="app-container">
+    <!-- Sidebar compartida -->
+    <aside class="sidebar">
+      <div class="brand">
+        <h3>Turismo Azañero</h3>
+        <span>{{ authService.currentUser()?.rol === 'ADMINISTRADOR' ? 'Administrador' : 'Ventanilla' }}</span>
+      </div>
+
+      <nav class="nav-menu">
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+          <span class="icon">📊</span> Dashboard
+        </a>
+        <a routerLink="/rutas" routerLinkActive="active" class="nav-item">
+          <span class="icon">🛣️</span> Rutas
+        </a>
+        @if (authService.currentUser()?.rol === 'ADMINISTRADOR') {
+          <a routerLink="/flota" routerLinkActive="active" class="nav-item">
+            <span class="icon">🚌</span> Flota
+          </a>
+        }
+        <a routerLink="/pasajeros" routerLinkActive="active" class="nav-item">
+          <span class="icon">👥</span> Pasajeros
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        @if (authService.currentUser()?.rol === 'ADMINISTRADOR') {
+          <button class="btn-schedule" routerLink="/viajes/1/croquis">+ Programar Viaje</button>
+        }
+        <div class="footer-link-configuration">
+          <a href="#">⚙️ Configuración</a>
+        </div>
+        <div class="footer-link-support">
+          <a href="#">❓ Soporte</a>
+        </div>
+      </div>
+    </aside>
+
+
+    <!-- Área central de contenido -->
+    <main class="main-content">
+      <header class="topbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search routes, vehicles..." />
+        </div>
+        <div class="topbar-actions">
+          <span class="location-tag">Cajamarca Office</span>
+          <button class="icon-btn" title="Notificaciones">🔔</button>
+          
+          <!-- Datos del usuario autenticado -->
+          <div class="user-badge">
+            <div class="user-avatar">
+              <img [src]="'https://ui-avatars.com/api/?name=' + (authService.currentUser()?.nombreCompleto || 'Usuario') + '&background=ea580c&color=fff'" alt="Perfil" />
+            </div>
+            <div class="user-details">
+              <span class="user-name">{{ authService.currentUser()?.nombreCompleto || 'Usuario' }}</span>
+              <span class="user-role">{{ authService.currentUser()?.rol || 'Sesión' }}</span>
+            </div>
+          </div>
+
+          <!-- Botón Cerrar Sesión -->
+          <button class="btn-logout" (click)="logout()" title="Cerrar sesión">
+            <span>🚪 Salir</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Contenido dinámico con espacio interno -->
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+}
