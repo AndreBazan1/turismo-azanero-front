@@ -276,6 +276,36 @@
   border-radius: 20px;
 }
 
+.badge-embarque {
+  background-color: #fef3c7;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.badge-en-ruta {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.badge-finalizado {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
 .precio-monto {
   font-size: 16px;
   font-weight: 700;
@@ -495,4 +525,80 @@
   background: #0f172a;
   color: #ffffff;
   border-color: #0f172a;
+}
+
+/* ============================================================ */
+/* BARRA DE FILTROS DE FECHA (POR DÍA)                          */
+/* ============================================================ */
+.barra-filtros-fecha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 22px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.botones-fecha-rapida {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn-filtro-fecha {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-filtro-fecha:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-filtro-fecha.activo {
+  background: #b45309;
+  border-color: #b45309;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(180, 83, 9, 0.25);
+}
+
+.input-fecha-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.input-fecha-box input[type="date"] {
+  border: 1px solid #cbd5e1;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #0f172a;
+  outline: none;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.input-fecha-box input[type="date"]:focus {
+  border-color: #b45309;
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.15);
+}
+
+.modal-row-3 {
+  grid-template-columns: repeat(3, 1fr) !important;
 }

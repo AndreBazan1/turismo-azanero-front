@@ -6,6 +6,9 @@
       <h2>Gestión de Flota</h2>
       <p>Administra y monitorea todos los vehículos activos en el corredor Cajamarca-Celendín.</p>
     </div>
+    <div class="flota-header-actions">
+      <button class="btn-nueva-flota" (click)="abrirModalNuevoVehiculo()">+ Nuevo Vehículo</button>
+    </div>
   </div>
 
   <!-- Filtros -->
@@ -92,7 +95,7 @@
           <!-- Acciones -->
           <div class="card-acciones">
             @if (normalizeEstado(v.estado) === 'DISPONIBLE') {
-              <button class="btn-accion btn-asignar">Asignar Viaje</button>
+              <button class="btn-accion btn-asignar" (click)="asignarViaje(v)">Asignar Viaje</button>
             }
             @if (normalizeEstado(v.estado) === 'EN_VIAJE') {
               <button class="btn-accion btn-rastrear">Rastrear Ruta</button>
@@ -108,6 +111,102 @@
           <div class="vacio-box">No hay vehículos en esta categoría.</div>
         }
       }
+    </div>
+  }
+
+  <!-- ====== MODAL: REGISTRAR NUEVA FLOTA / VEHÍCULO ====== -->
+  @if (mostrarModalNuevoVehiculo) {
+    <div class="modal-overlay" (click)="cerrarModalNuevoVehiculo()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+          <h3>Registrar Nuevo Vehículo</h3>
+          <button class="modal-close" (click)="cerrarModalNuevoVehiculo()">✕</button>
+        </div>
+
+        <div class="modal-body">
+
+          <!-- Placa / Capacidad -->
+          <div class="modal-row">
+            <div class="modal-field">
+              <label>Placa *</label>
+              <input type="text" [(ngModel)]="nuevoVehiculo.placa" placeholder="Ej. M3G-456" maxlength="10" />
+            </div>
+            <div class="modal-field">
+              <label>Capacidad Asientos *</label>
+              <select [(ngModel)]="nuevoVehiculo.capacidad">
+                <option [ngValue]="15">15 Pasajeros (Estándar)</option>
+                <option [ngValue]="18">18 Pasajeros (Extendida)</option>
+                <option [ngValue]="12">12 Pasajeros</option>
+                <option [ngValue]="20">20 Pasajeros</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Marca / Modelo -->
+          <div class="modal-row">
+            <div class="modal-field">
+              <label>Marca *</label>
+              <input type="text" [(ngModel)]="nuevoVehiculo.marca" placeholder="Ej. Toyota, Renault" />
+            </div>
+            <div class="modal-field">
+              <label>Modelo *</label>
+              <input type="text" [(ngModel)]="nuevoVehiculo.modelo" placeholder="Ej. HiAce, Master" />
+            </div>
+          </div>
+
+          <!-- Año / Estado -->
+          <div class="modal-row">
+            <div class="modal-field">
+              <label>Año *</label>
+              <input type="number" [(ngModel)]="nuevoVehiculo.anio" placeholder="2024" min="2000" max="2035" />
+            </div>
+            <div class="modal-field">
+              <label>Estado Inicial *</label>
+              <select [(ngModel)]="nuevoVehiculo.estado">
+                <option value="OPERATIVO">Operativo / Disponible</option>
+                <option value="MANTENIMIENTO">Mantenimiento</option>
+                <option value="TALLER">Taller</option>
+                <option value="DESCANSO">Descanso</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Conductor asignado / Última revisión -->
+          <div class="modal-row">
+            <div class="modal-field">
+              <label>Conductor Asignado</label>
+              <select [(ngModel)]="nuevoVehiculo.choferId">
+                <option [ngValue]="null">Sin conductor (Asignar después)</option>
+                @for (ch of choferes; track ch.idChofer) {
+                  <option [ngValue]="ch.idChofer">{{ ch.nombreCompleto }} ({{ ch.dni }})</option>
+                }
+              </select>
+            </div>
+            <div class="modal-field">
+              <label>Última Revisión Técnica</label>
+              <input type="date" [(ngModel)]="nuevoVehiculo.ultimaRevision" />
+            </div>
+          </div>
+
+          <!-- Mensajes -->
+          @if (mensajeErrorVehiculo) {
+            <div class="modal-error">⚠ {{ mensajeErrorVehiculo }}</div>
+          }
+          @if (mensajeExitoVehiculo) {
+            <div class="modal-exito">✅ {{ mensajeExitoVehiculo }}</div>
+          }
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancelar" (click)="cerrarModalNuevoVehiculo()" [disabled]="guardandoVehiculo">Cancelar</button>
+          <button class="btn-guardar" (click)="guardarVehiculo()" [disabled]="guardandoVehiculo">
+            {{ guardandoVehiculo ? 'Guardando...' : 'Guardar Vehículo' }}
+          </button>
+        </div>
+
+      </div>
     </div>
   }
 

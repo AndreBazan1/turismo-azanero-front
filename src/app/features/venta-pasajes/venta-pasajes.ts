@@ -44,6 +44,65 @@ export class VentaPasajes implements OnInit {
   modoEdicionOcupado: boolean = false;
   dniPasajeroOcupado: string = '';
   nombrePasajeroOcupado: string = '';
+  cargandoDniEdicion: boolean = false;
+  errorDniEdicion: string = '';
+
+  // Layout del croquis fiel a la imagen de referencia y al tipo de combi (15 o 18 asientos):
+  // Col 1: PILOTO | 3 | 6 | 9  | (12) | 12/15 (fondo)
+  // Col 2: vacío  | 4 | 7 | 10 | (13) | 13/16 (fondo)
+  // Col 3: 1      | 5 | PASILLO| (PAS)| 14/17 (fondo)
+  // Col 4: 2      | PUERTA | 8 | 11 | (14) | 15/18 (fondo)
+  get estructuraCroquis() {
+    const numeros = this.asientos.map(a => a.numero).sort((a, b) => a - b);
+    const total = numeros.length > 0 ? Math.max(...numeros) : 15;
+
+    // 1. Cabina: asientos 1 y 2
+    const cabina = [1, 2].filter(n => numeros.includes(n));
+
+    // 2. Fila detrás de cabina / acceso: asientos 3, 4, 5 (col 1, 2, 3) y col 4 es PUERTA
+    const filaPuerta = [3, 4, 5].filter(n => numeros.includes(n));
+
+    // 3. Última fila del fondo: siempre 4 asientos corridos de lado a lado
+    // Si total es 15 -> 12, 13, 14, 15
+    // Si total es 18 -> 15, 16, 17, 18
+    const cantFondo = Math.min(4, Math.max(1, total - 5));
+    const inicioFondo = total - cantFondo + 1;
+    const filaFondo: number[] = [];
+    for (let i = inicioFondo; i <= total; i++) {
+      if (numeros.includes(i)) filaFondo.push(i);
+    }
+
+    // 4. Filas intermedias: asientos entre 6 y inicioFondo - 1
+    // Cada fila tiene [izq1, izq2, PASILLO, der]
+    const intermediosNums = numeros.filter(n => n >= 6 && n < inicioFondo);
+    const filasIntermedias: { izq1?: number; izq2?: number; der?: number }[] = [];
+
+    for (let i = 0; i < intermediosNums.length; i += 3) {
+      filasIntermedias.push({
+        izq1: intermediosNums[i],
+        izq2: intermediosNums[i + 1],
+        der: intermediosNums[i + 2]
+      });
+    }
+
+    return {
+      cabina,
+      filaPuerta,
+      filasIntermedias,
+      filaFondo
+    };
+  }
+
+  // Getters para compatibilidad con plantillas previas
+  get filasIzquierda(): number[][] {
+    return this.estructuraCroquis.filasIntermedias
+      .map(f => [f.izq1, f.izq2].filter((n): n is number => n !== undefined && n !== null));
+  }
+
+  get filasDerecha(): number[][] {
+    return this.estructuraCroquis.filasIntermedias
+      .map(f => [f.der].filter((n): n is number => n !== undefined && n !== null));
+  }
 
   ngOnInit() {
     this.idViaje = Number(this.route.snapshot.paramMap.get('id'));
@@ -53,9 +112,15 @@ export class VentaPasajes implements OnInit {
     }
   }
 
+  //ESTO ESTÁ MODIFICADO XD
   cargarViaje() {
     this.viajeService.obtenerViajePorId(this.idViaje).subscribe({
       next: (data) => {
+        // AGREGADO: Normalización de fechaHora reemplazando espacios por 'T' para formato ISO
+        if (data && data.fechaHora) {
+          data.fechaHora = data.fechaHora.toString().replace(' ', 'T');
+        }
+
         this.viaje = data;
         if (data.precio && data.precio > 0) {
           this.precioPasaje = data.precio;
@@ -87,6 +152,20 @@ export class VentaPasajes implements OnInit {
   // Comprueba si un asiento está en la lista de seleccionados
   estaSeleccionado(asiento: Asiento): boolean {
     return this.asientosSeleccionados.some(a => a.idAsiento === asiento.idAsiento);
+  }
+
+  // Busca un asiento por número de asiento
+  getAsiento(numero: number): Asiento | undefined {
+    return this.asientos.find(a => a.numero === numero);
+  }
+
+  // Retorna las clases CSS para un asiento
+  getClaseAsiento(asiento: Asiento): { [key: string]: boolean } {
+    return {
+      'libre': asiento.estado === 'LIBRE',
+      'ocupado': asiento.estado === 'OCUPADO',
+      'seleccionado': this.estaSeleccionado(asiento)
+    };
   }
 
   // Alterna selección múltiple de asientos
@@ -173,9 +252,22 @@ export class VentaPasajes implements OnInit {
     this.viajeService.consultarDni(p.dniPasajero).subscribe({
       next: (res: any) => {
         p.cargandoReniec = false;
-        if (res && (res.nombres || res.nombreCompleto)) {
-          p.nombre = res.nombres || res.nombreCompleto;
-          p.apellido = [res.apellidoPaterno, res.apellidoMaterno].filter(Boolean).join(' ');
+        if (res && (res.nombres || res.nombreCompleto || res.cliente)) {
+          const nombres = (res.nombres || '').trim();
+          const apPaterno = (res.apellido_paterno || res.apellidoPaterno || '').trim();
+          const apMaterno = (res.apellido_materno || res.apellidoMaterno || '').trim();
+          let apellidos = [apPaterno, apMaterno].filter(Boolean).join(' ').trim();
+
+          // Si apellidos vinieron vacíos pero cliente/nombreCompleto sí existe
+          if (!apellidos && (res.cliente || res.nombreCompleto)) {
+            const full = (res.cliente || res.nombreCompleto).trim();
+            if (nombres && full.includes(nombres)) {
+              apellidos = full.replace(nombres, '').trim();
+            }
+          }
+
+          p.nombre = nombres || res.cliente || res.nombreCompleto || '';
+          p.apellido = apellidos;
         } else {
           p.errorReniec = 'No encontrado en RENIEC. Ingrese el nombre manualmente.';
         }
@@ -262,14 +354,53 @@ export class VentaPasajes implements OnInit {
     this.cargarCroquis();
   }
 
+  // Búsqueda de DNI en modo edición del asiento ocupado
+  buscarDniEdicion() {
+    this.errorDniEdicion = '';
+    if (!this.dniPasajeroOcupado || this.dniPasajeroOcupado.length !== 8) return;
+
+    this.cargandoDniEdicion = true;
+    this.cdr.detectChanges();
+
+    this.viajeService.consultarDni(this.dniPasajeroOcupado).subscribe({
+      next: (res: any) => {
+        this.cargandoDniEdicion = false;
+        if (res && (res.nombres || res.nombreCompleto || res.cliente)) {
+          const nombres = (res.nombres || '').trim();
+          const apPaterno = (res.apellido_paterno || res.apellidoPaterno || '').trim();
+          const apMaterno = (res.apellido_materno || res.apellidoMaterno || '').trim();
+          let apellidos = [apPaterno, apMaterno].filter(Boolean).join(' ').trim();
+          if (!apellidos && (res.cliente || res.nombreCompleto)) {
+            const full = (res.cliente || res.nombreCompleto).trim();
+            if (nombres && full.includes(nombres)) apellidos = full.replace(nombres, '').trim();
+          }
+          this.nombrePasajeroOcupado = [nombres || res.cliente || res.nombreCompleto, apellidos]
+            .filter(Boolean).join(' ').trim();
+          this.errorDniEdicion = '';
+        } else {
+          this.errorDniEdicion = 'No encontrado en RENIEC. Ingrese el nombre manualmente.';
+        }
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.cargandoDniEdicion = false;
+        this.errorDniEdicion = 'Sin conexión a RENIEC. Ingrese el nombre manualmente.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   // Acciones sobre asiento ocupado existente
   cerrarDetalleOcupado() {
     this.asientoOcupadoSeleccionado = null;
     this.modoEdicionOcupado = false;
+    this.errorDniEdicion = '';
+    this.cargandoDniEdicion = false;
   }
 
   activarEdicionOcupado() {
     this.modoEdicionOcupado = true;
+    this.errorDniEdicion = '';
   }
 
   guardarEdicionOcupado() {

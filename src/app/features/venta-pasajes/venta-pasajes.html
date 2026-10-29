@@ -11,7 +11,7 @@
       <div class="info-viaje-resumen">
         <h2>{{ viaje?.ciudadOrigen || 'Origen' }} ➔ {{ viaje?.ciudadDestino || 'Destino' }}</h2>
         <p>
-          <span>🕒 {{ viaje?.fechaHora | date:'shortTime' }}</span> • 
+          <span>🕒 {{ viaje?.fechaHora | date:'h:mm a' }}</span> • 
           <span>🚌 Bus: {{ viaje?.placa || '---' }}</span> • 
           <span>👨‍✈️ Chofer: {{ viaje?.choferNombre || '---' }}</span> • 
           <span class="precio-tag">S/ {{ precioPasaje | number:'1.2-2' }} por pasaje</span>
@@ -26,35 +26,97 @@
       </div>
     } @else {
       <div class="croquis-wrapper">
+        <!-- ====== CROQUIS REALISTA DE COMBI ====== -->
+        <!-- ====== CROQUIS REALISTA DE COMBI ====== -->
         <div class="croquis-combi">
-          <div class="cabecera-combi">
-            <span class="icon-frente">🚐</span> Frente / Cabina de Conducción
-          </div>
 
-          <div class="grid-combi">
-            <!-- Chofer fijo en la esquina superior izquierda -->
-            <div class="asiento chofer">
-              <span class="asiento-icon">👨‍✈️</span>
-              <span class="asiento-txt">Chofer</span>
+          <div class="combi-plataforma">
+            <!-- FILA 0: CABINA [PILOTO | VACÍO | 1 | 2] -->
+            <div class="grid-combi-fila fila-cabina-grid">
+              <div class="asiento-piloto">
+                <span class="piloto-txt">PILOTO</span>
+              </div>
+              <div class="celda-vacia"></div>
+              @if (getAsiento(1)) {
+                <button class="asiento" [ngClass]="getClaseAsiento(getAsiento(1)!)" (click)="toggleAsiento(getAsiento(1)!)">
+                  <span class="num">{{ getAsiento(1)!.numero }}</span>
+                  @if (estaSeleccionado(getAsiento(1)!)) { <span class="check-mark">✓</span> }
+                </button>
+              }
+              @if (getAsiento(2)) {
+                <button class="asiento" [ngClass]="getClaseAsiento(getAsiento(2)!)" (click)="toggleAsiento(getAsiento(2)!)">
+                  <span class="num">{{ getAsiento(2)!.numero }}</span>
+                  @if (estaSeleccionado(getAsiento(2)!)) { <span class="check-mark">✓</span> }
+                </button>
+              }
             </div>
-            <div class="pasillo"></div>
 
-            <!-- Asientos reales según capacidad -->
-            @for (asiento of asientos; track asiento.idAsiento) {
-              <button 
-                class="asiento" 
-                [ngClass]="{
-                  'libre': asiento.estado === 'LIBRE',
-                  'ocupado': asiento.estado === 'OCUPADO',
-                  'seleccionado': estaSeleccionado(asiento)
-                }"
-                (click)="toggleAsiento(asiento)">
-                <span class="num">{{ asiento.numero }}</span>
-                @if (estaSeleccionado(asiento)) {
-                  <span class="check-mark">✓</span>
+            <!-- FILA 1: DETRÁS DE CABINA [3 | 4 | 5 | ENTRADA] -->
+            <div class="grid-combi-fila fila-puerta-grid">
+              @for (num of estructuraCroquis.filaPuerta; track num) {
+                @if (getAsiento(num)) {
+                  <button class="asiento" [ngClass]="getClaseAsiento(getAsiento(num)!)" (click)="toggleAsiento(getAsiento(num)!)">
+                    <span class="num">{{ num }}</span>
+                    @if (estaSeleccionado(getAsiento(num)!)) { <span class="check-mark">✓</span> }
+                  </button>
                 }
-              </button>
+              }
+              <!-- Espacio de acceso/puerta libre -->
+              <div class="celda-vacia"></div>
+            </div>
+
+            <!-- FILAS INTERMEDIAS: [izq1 | izq2 | PASILLO | der] -->
+            @for (fila of estructuraCroquis.filasIntermedias; track fila.izq1) {
+              <div class="grid-combi-fila fila-intermedia-grid">
+                <!-- izq 1 -->
+                @if (fila.izq1 && getAsiento(fila.izq1)) {
+                  <button class="asiento" [ngClass]="getClaseAsiento(getAsiento(fila.izq1)!)" (click)="toggleAsiento(getAsiento(fila.izq1)!)">
+                    <span class="num">{{ fila.izq1 }}</span>
+                    @if (estaSeleccionado(getAsiento(fila.izq1)!)) { <span class="check-mark">✓</span> }
+                  </button>
+                } @else {
+                  <div class="celda-vacia"></div>
+                }
+
+                <!-- izq 2 -->
+                @if (fila.izq2 && getAsiento(fila.izq2)) {
+                  <button class="asiento" [ngClass]="getClaseAsiento(getAsiento(fila.izq2)!)" (click)="toggleAsiento(getAsiento(fila.izq2)!)">
+                    <span class="num">{{ fila.izq2 }}</span>
+                    @if (estaSeleccionado(getAsiento(fila.izq2)!)) { <span class="check-mark">✓</span> }
+                  </button>
+                } @else {
+                  <div class="celda-vacia"></div>
+                }
+
+                <!-- PASILLO central en columna 3 -->
+                <div class="celda-pasillo">
+                  <span class="pasillo-letra">PASILLO</span>
+                </div>
+
+                <!-- der -->
+                @if (fila.der && getAsiento(fila.der)) {
+                  <button class="asiento" [ngClass]="getClaseAsiento(getAsiento(fila.der)!)" (click)="toggleAsiento(getAsiento(fila.der)!)">
+                    <span class="num">{{ fila.der }}</span>
+                    @if (estaSeleccionado(getAsiento(fila.der)!)) { <span class="check-mark">✓</span> }
+                  </button>
+                } @else {
+                  <div class="celda-vacia"></div>
+                }
+              </div>
             }
+
+            <!-- ÚLTIMA FILA: CORRIDA DE 4 ASIENTOS SEGUIDOS SIN PASILLO -->
+            <div class="grid-combi-fila fila-fondo-grid">
+              @for (num of estructuraCroquis.filaFondo; track num) {
+                @if (getAsiento(num)) {
+                  <button class="asiento asiento-fondo" [ngClass]="getClaseAsiento(getAsiento(num)!)" (click)="toggleAsiento(getAsiento(num)!)">
+                    <span class="num">{{ num }}</span>
+                    @if (estaSeleccionado(getAsiento(num)!)) { <span class="check-mark">✓</span> }
+                  </button>
+                }
+              }
+            </div>
+
           </div>
 
           <!-- Leyenda -->
@@ -65,28 +127,68 @@
           </div>
         </div>
 
-        <!-- Detalle de asiento ocupado si se consulta individualmente -->
+        <!-- ====== PANEL LATERAL: DETALLE/EDICIÓN DE ASIENTO OCUPADO ====== -->
         @if (asientoOcupadoSeleccionado) {
           <div class="card-ocupado-detalle">
             <div class="ocupado-header">
-              <h4>📋 Boleto Emitido — Asiento N° {{ asientoOcupadoSeleccionado.numero }}</h4>
+              <div>
+                <div class="ocupado-badge">Asiento N° {{ asientoOcupadoSeleccionado.numero }}</div>
+                <h4>📋 Boleto Emitido</h4>
+              </div>
               <button class="btn-cerrar-mini" (click)="cerrarDetalleOcupado()">✕</button>
             </div>
+
             @if (!modoEdicionOcupado) {
+              <!-- Modo solo lectura -->
               <div class="datos-consulta">
-                <p><strong>DNI:</strong> {{ dniPasajeroOcupado || 'No registrado' }}</p>
-                <p><strong>Pasajero:</strong> {{ nombrePasajeroOcupado || 'No registrado' }}</p>
-                <p><strong>Precio:</strong> S/ {{ precioPasaje | number:'1.2-2' }}</p>
-                <button class="btn-editar-mini" (click)="activarEdicionOcupado()">✏️ Modificar Datos</button>
+                <div class="dato-fila">
+                  <span class="dato-label">DNI</span>
+                  <span class="dato-valor">{{ dniPasajeroOcupado || '—' }}</span>
+                </div>
+                <div class="dato-fila">
+                  <span class="dato-label">Pasajero</span>
+                  <span class="dato-valor nombre-largo">{{ nombrePasajeroOcupado || '—' }}</span>
+                </div>
+                <div class="dato-fila">
+                  <span class="dato-label">Precio</span>
+                  <span class="dato-valor precio-verde">S/ {{ precioPasaje | number:'1.2-2' }}</span>
+                </div>
+                <button class="btn-editar-mini" (click)="activarEdicionOcupado()">✏️ Modificar Datos del Pasajero</button>
               </div>
             } @else {
+              <!-- Modo edición -->
               <div class="form-edicion-ocupado">
-                <label>DNI:</label>
-                <input type="text" [(ngModel)]="dniPasajeroOcupado" maxlength="8" />
-                <label>Pasajero:</label>
-                <input type="text" [(ngModel)]="nombrePasajeroOcupado" />
+                <div class="campo-edicion">
+                  <label>DNI del pasajero</label>
+                  <div class="input-dni-wrap">
+                    <input
+                      type="text"
+                      [(ngModel)]="dniPasajeroOcupado"
+                      (input)="buscarDniEdicion()"
+                      maxlength="8"
+                      placeholder="8 dígitos"
+                      class="input-edicion" />
+                    @if (cargandoDniEdicion) {
+                      <span class="mini-loader">⏳</span>
+                    }
+                  </div>
+                  @if (errorDniEdicion) {
+                    <small class="aviso-reniec">ℹ️ {{ errorDniEdicion }}</small>
+                  }
+                </div>
+                <div class="campo-edicion">
+                  <label>Nombre completo del pasajero</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="nombrePasajeroOcupado"
+                    placeholder="Nombre y apellidos"
+                    class="input-edicion" />
+                </div>
                 <div class="btns-edicion">
-                  <button class="btn-guardar-mini" (click)="guardarEdicionOcupado()">Guardar</button>
+                  <button
+                    class="btn-guardar-mini"
+                    [disabled]="dniPasajeroOcupado.length !== 8 || !nombrePasajeroOcupado || cargandoDniEdicion"
+                    (click)="guardarEdicionOcupado()">💾 Guardar Cambios</button>
                   <button class="btn-cancelar-mini" (click)="cerrarDetalleOcupado()">Cancelar</button>
                 </div>
               </div>
@@ -306,7 +408,7 @@
                 <span class="punto-dot origen"></span>
                 <div class="punto-textos">
                   <strong>{{ viaje?.ciudadOrigen }}</strong>
-                  <small>{{ viaje?.fechaHora | date:'shortTime' }}</small>
+                  <small>{{ viaje?.fechaHora | date:'h:mm a' }}</small>
                 </div>
               </div>
               <div class="linea-trayecto"></div>

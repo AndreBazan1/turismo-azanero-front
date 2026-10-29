@@ -38,6 +38,11 @@ export class PasajerosComponent implements OnInit {
   cargandoViajes: boolean = true;
   busquedaViaje: string = '';
 
+  // Filtros por día
+  hoyStr: string = new Date().toISOString().split('T')[0];
+  fechaFiltro: string = new Date().toISOString().split('T')[0];
+  mostrarTodos: boolean = false;
+
   // Datos del manifiesto seleccionado
   viajeSeleccionado: ViajeResponse | null = null;
   cargandoManifiesto: boolean = false;
@@ -64,7 +69,8 @@ export class PasajerosComponent implements OnInit {
   cargarViajes() {
     this.modoVista = 'LISTA_VIAJES';
     this.cargandoViajes = true;
-    this.viajeService.listarProgramados().subscribe({
+    const f = this.mostrarTodos ? undefined : this.fechaFiltro;
+    this.viajeService.listarProgramados(f, this.mostrarTodos).subscribe({
       next: (data) => {
         this.viajes = data || [];
         this.cargandoViajes = false;
@@ -76,6 +82,41 @@ export class PasajerosComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  filtrarHoy() {
+    this.mostrarTodos = false;
+    this.fechaFiltro = this.hoyStr;
+    this.cargarViajes();
+  }
+
+  filtrarAyer() {
+    this.mostrarTodos = false;
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    this.fechaFiltro = d.toISOString().split('T')[0];
+    this.cargarViajes();
+  }
+
+  filtrarManana() {
+    this.mostrarTodos = false;
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    this.fechaFiltro = d.toISOString().split('T')[0];
+    this.cargarViajes();
+  }
+
+  filtrarTodos() {
+    this.mostrarTodos = true;
+    this.cargarViajes();
+  }
+
+  cambiarFecha(nuevaFecha: string) {
+    if (nuevaFecha) {
+      this.mostrarTodos = false;
+      this.fechaFiltro = nuevaFecha;
+      this.cargarViajes();
+    }
   }
 
   get viajesFiltrados(): ViajeResponse[] {
@@ -218,6 +259,39 @@ export class PasajerosComponent implements OnInit {
     return fila?.estado === 'ASIGNADO';
   }
 
+  getFilaManifiesto(numero: number): FilaManifiesto | undefined {
+    return this.filasManifiesto.find(f => f.numeroAsiento === numero);
+  }
+
+  // Estructura idéntica al croquis de la combi para 15 y 18 asientos
+  get estructuraCroquis() {
+    const numeros = this.filasManifiesto.map(f => f.numeroAsiento).sort((a, b) => a - b);
+    const total = numeros.length > 0 ? Math.max(...numeros) : (this.viajeSeleccionado?.totalAsientos || 15);
+
+    const cabina = [1, 2].filter(n => numeros.includes(n));
+    const filaPuerta = [3, 4, 5].filter(n => numeros.includes(n));
+
+    const cantFondo = Math.min(4, Math.max(1, total - 5));
+    const inicioFondo = total - cantFondo + 1;
+    const filaFondo: number[] = [];
+    for (let i = inicioFondo; i <= total; i++) {
+      if (numeros.includes(i)) filaFondo.push(i);
+    }
+
+    const intermediosNums = numeros.filter(n => n >= 6 && n < inicioFondo);
+    const filasIntermedias: { izq1?: number; izq2?: number; der?: number }[] = [];
+
+    for (let i = 0; i < intermediosNums.length; i += 3) {
+      filasIntermedias.push({
+        izq1: intermediosNums[i],
+        izq2: intermediosNums[i + 1],
+        der: intermediosNums[i + 2]
+      });
+    }
+
+    return { cabina, filaPuerta, filasIntermedias, filaFondo };
+  }
+
   volverAListaViajes() {
     this.modoVista = 'LISTA_VIAJES';
     this.viajeSeleccionado = null;
@@ -233,6 +307,10 @@ export class PasajerosComponent implements OnInit {
   }
 
   imprimirManifiesto() {
+    document.body.classList.add('imprimiendo-manifiesto');
     window.print();
+    setTimeout(() => {
+      document.body.classList.remove('imprimiendo-manifiesto');
+    }, 1000);
   }
 }

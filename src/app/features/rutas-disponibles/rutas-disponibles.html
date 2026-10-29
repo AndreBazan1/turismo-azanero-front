@@ -13,6 +13,32 @@
       </div>
     </div>
 
+    <!-- Barra de Filtros de Fecha -->
+    <div class="barra-filtros-fecha">
+      <div class="botones-fecha-rapida">
+        <button type="button" class="btn-filtro-fecha" [class.activo]="!mostrarTodos && fechaFiltro < hoyStr" (click)="filtrarAyer()">
+          ◀ Ayer
+        </button>
+        <button type="button" class="btn-filtro-fecha" [class.activo]="!mostrarTodos && fechaFiltro === hoyStr" (click)="filtrarHoy()">
+          📅 Hoy
+        </button>
+        <button type="button" class="btn-filtro-fecha" [class.activo]="!mostrarTodos && fechaFiltro > hoyStr" (click)="filtrarManana()">
+          Mañana ▶
+        </button>
+        <button type="button" class="btn-filtro-fecha" [class.activo]="mostrarTodos" (click)="filtrarTodos()">
+          Todos los viajes
+        </button>
+      </div>
+
+      <div class="input-fecha-box">
+        <label>Seleccionar Fecha:</label>
+        <input 
+          type="date" 
+          [ngModel]="fechaFiltro" 
+          (ngModelChange)="cambiarFecha($event)" />
+      </div>
+    </div>
+
     <!-- Lista de rutas programadas -->
     <div class="seccion-rutas-admin">
 
@@ -25,7 +51,7 @@
 
           <div class="ruta-admin-hora">
             <span class="hora">{{ viaje.fechaHora | date:'shortTime' }}</span>
-            <span class="etiqueta-sub">Salida</span>
+            <span class="etiqueta-sub">{{ viaje.fechaHora | date:'dd/MM/yyyy' }}</span>
           </div>
 
           <div class="ruta-admin-trayecto">
@@ -45,11 +71,9 @@
           </div>
 
           <div class="ruta-admin-estado">
-            @if (viaje.asientosLibres > 0) {
-              <span class="badge-activo">● Activo</span>
-            } @else {
-              <span class="badge-lleno">Completo</span>
-            }
+            <span [ngClass]="getEstadoViaje(viaje.fechaHora, viaje.asientosLibres).clase">
+              {{ getEstadoViaje(viaje.fechaHora, viaje.asientosLibres).texto }}
+            </span>
           </div>
 
           <div class="ruta-admin-precio">
@@ -65,7 +89,9 @@
         </div>
       } @empty {
         @if (!cargando) {
-          <div class="vacio-box">No hay rutas programadas. ¡Crea la primera con el botón "+ Nueva Ruta"!</div>
+          <div class="vacio-box">
+            No hay salidas para {{ mostrarTodos ? 'ninguna fecha' : (fechaFiltro === hoyStr ? 'el día de hoy' : (fechaFiltro | date:'dd/MM/yyyy')) }}. ¡Crea una con "+ Nueva Ruta" o cambia de fecha!
+          </div>
         }
       }
     </div>
@@ -109,7 +135,7 @@
           <div class="modal-row">
             <div class="modal-field">
               <label>Asignación de Flota</label>
-              <select [(ngModel)]="nuevaRuta.vehiculoId">
+              <select [(ngModel)]="nuevaRuta.vehiculoId" (ngModelChange)="onVehiculoChange()">
                 <option [ngValue]="null" disabled>Seleccionar vehículo</option>
                 @for (v of vehiculos; track v.idVehiculo) {
                   <option [ngValue]="v.idVehiculo">{{ v.placa }} — {{ v.marca }} {{ v.modelo }}</option>
@@ -127,8 +153,12 @@
             </div>
           </div>
 
-          <!-- Hora / Precio -->
-          <div class="modal-row">
+          <!-- Fecha / Hora / Precio -->
+          <div class="modal-row modal-row-3">
+            <div class="modal-field">
+              <label>Fecha</label>
+              <input type="date" [(ngModel)]="nuevaRuta.fecha" />
+            </div>
             <div class="modal-field">
               <label>Hora de Salida</label>
               <input type="time" [(ngModel)]="nuevaRuta.horaLocal" />
@@ -169,6 +199,32 @@
       <p>Consulta disponibilidad y emite boletos en tiempo real.</p>
     </div>
 
+    <!-- Barra de Filtros de Fecha para Ventanilla -->
+    <div class="barra-filtros-fecha">
+      <div class="botones-fecha-rapida">
+        <button type="button" class="btn-filtro-fecha" [class.activo]="!mostrarTodos && fechaFiltro < hoyStr" (click)="filtrarAyer()">
+          ◀ Ayer
+        </button>
+        <button type="button" class="btn-filtro-fecha" [class.activo]="!mostrarTodos && fechaFiltro === hoyStr" (click)="filtrarHoy()">
+          📅 Hoy
+        </button>
+        <button type="button" class="btn-filtro-fecha" [class.activo]="!mostrarTodos && fechaFiltro > hoyStr" (click)="filtrarManana()">
+          Mañana ▶
+        </button>
+        <button type="button" class="btn-filtro-fecha" [class.activo]="mostrarTodos" (click)="filtrarTodos()">
+          Todos los viajes
+        </button>
+      </div>
+
+      <div class="input-fecha-box">
+        <label>Fecha:</label>
+        <input 
+          type="date" 
+          [ngModel]="fechaFiltro" 
+          (ngModelChange)="cambiarFecha($event)" />
+      </div>
+    </div>
+
     <div class="seccion-salidas">
       <h3>Salidas Disponibles</h3>
 
@@ -181,7 +237,7 @@
 
           <div class="bloque-hora">
             <span class="hora">{{ viaje.fechaHora | date:'shortTime' }}</span>
-            <span class="etiqueta-sub">Salida</span>
+            <span class="etiqueta-sub">{{ viaje.fechaHora | date:'dd/MM/yyyy' }}</span>
           </div>
 
           <div class="bloque-trayecto">
@@ -201,9 +257,9 @@
           <div class="bloque-accion">
             <button
               class="btn-seleccionar"
-              [disabled]="viaje.asientosLibres === 0"
+              [disabled]="viaje.asientosLibres === 0 || haPartio(viaje.fechaHora)"
               (click)="seleccionarViaje(viaje.idViaje)">
-              {{ viaje.asientosLibres > 0 ? 'Seleccionar' : 'No Disponible' }}
+              {{ haPartio(viaje.fechaHora) ? 'Partió' : (viaje.asientosLibres > 0 ? 'Seleccionar' : 'Agotado') }}
             </button>
             <button
               class="btn-manifiesto-ventanilla"
@@ -216,7 +272,9 @@
         </div>
       } @empty {
         @if (!cargando) {
-          <div class="vacio-box">No hay salidas programadas por el administrador en este momento.</div>
+          <div class="vacio-box">
+            No hay salidas para {{ mostrarTodos ? 'ninguna fecha' : (fechaFiltro === hoyStr ? 'el día de hoy' : (fechaFiltro | date:'dd/MM/yyyy')) }}.
+          </div>
         }
       }
     </div>

@@ -5,6 +5,7 @@ import { RutasDisponiblesComponent } from './features/rutas-disponibles/rutas-di
 import { VentaPasajes } from './features/venta-pasajes/venta-pasajes';
 import { FlotaComponent } from './features/flota/flota';
 import { PasajerosComponent } from './features/pasajeros/pasajeros';
+import { EncomiendasComponent } from './features/encomiendas/encomiendas';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 
@@ -18,5 +19,6 @@ export const routes: Routes = [
   { path: 'flota', component: FlotaComponent, canActivate: [authGuard, roleGuard(['ADMINISTRADOR'])] },
   { path: 'pasajeros', component: PasajerosComponent, canActivate: [authGuard] },
   { path: 'pasajeros/:id', component: PasajerosComponent, canActivate: [authGuard] },
+  { path: 'encomiendas', component: EncomiendasComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: 'login' }
 ];

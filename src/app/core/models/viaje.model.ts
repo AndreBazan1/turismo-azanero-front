@@ -37,17 +37,24 @@ export interface VenderPasajeRequest {
   viajeId: number;
   numeroAsiento: number;
   nombrePasajero: string;
+  apellidoPasajero?: string;
   dniPasajero: string;
+  idUsuarioVendedor?: number;
+  metodoPago?: string;
   precio: number;
 }
 
 export interface PeruApiDniDTO {
-  numeroDocumento: string;
-  tipoDocumento: string;
-  nombreCompleto: string;
-  nombres: string;
-  apellidoPaterno: string;
-  apellidoMaterno: string;
+  numeroDocumento?: string;
+  dni?: string;
+  tipoDocumento?: string;
+  nombreCompleto?: string;
+  cliente?: string;
+  nombres?: string;
+  apellidoPaterno?: string;
+  apellido_paterno?: string;
+  apellidoMaterno?: string;
+  apellido_materno?: string;
 }
 
 // Modelos auxiliares para los desplegables del Modal
@@ -59,6 +66,8 @@ export interface Vehiculo {
   anio: number;
   capacidad: number;
   estado: string;
+  idChofer?: number;
+  choferAsignado?: string;
 }
 
 export interface Chofer {
@@ -99,4 +108,4 @@ export interface PasajeroForm {
   telefono: string;
   cargandoReniec?: boolean;
   errorReniec?: string;
-}
+}

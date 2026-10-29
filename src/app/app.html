@@ -25,11 +25,14 @@
         <a routerLink="/pasajeros" routerLinkActive="active" class="nav-item">
           <span class="icon">👥</span> Pasajeros
         </a>
+        <a routerLink="/encomiendas" routerLinkActive="active" class="nav-item">
+          <span class="icon">📦</span> Encomiendas
+        </a>
       </nav>
 
       <div class="sidebar-footer">
         @if (authService.currentUser()?.rol === 'ADMINISTRADOR') {
-          <button class="btn-schedule" routerLink="/viajes/1/croquis">+ Programar Viaje</button>
+          <button class="btn-schedule" (click)="programarViaje()">+ Programar Viaje</button>
         }
         <div class="footer-link-configuration">
           <a href="#">⚙️ Configuración</a>
@@ -44,14 +47,21 @@
     <!-- Área central de contenido -->
     <main class="main-content">
       <header class="topbar">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="Search routes, vehicles..." />
+        <div class="topbar-left">
+          <span class="system-status-pill">
+            <span class="status-dot"></span> Terminal de Despacho
+          </span>
         </div>
         <div class="topbar-actions">
           <span class="location-tag">Cajamarca Office</span>
           <button class="icon-btn" title="Notificaciones">🔔</button>
-          
+
+          <!-- Toggle Modo Oscuro -->
+          <button class="btn-dark-toggle" (click)="toggleDarkMode()" [title]="isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+            <span class="toggle-icon">{{ isDarkMode ? '☀️' : '🌙' }}</span>
+            <span class="toggle-label">{{ isDarkMode ? 'Claro' : 'Oscuro' }}</span>
+          </button>
+
           <!-- Datos del usuario autenticado -->
           <div class="user-badge">
             <div class="user-avatar">

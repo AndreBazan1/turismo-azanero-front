@@ -1,1 +1,867 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* ============================================================ */
+/* DARK MODE THEME — .dark-theme en body                        */
+/* ============================================================ */
+body.dark-theme {
+  background-color: #0b0f19 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Sidebar en modo oscuro */
+body.dark-theme .sidebar {
+  background-color: #111827 !important;
+  border-right-color: #1e293b !important;
+}
+
+body.dark-theme .brand h3 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .brand span {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .nav-item {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .nav-item:hover,
+body.dark-theme .nav-item.active {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .footer-link-configuration a,
+body.dark-theme .footer-link-support a {
+  color: #64748b !important;
+}
+
+/* Topbar en modo oscuro */
+body.dark-theme .topbar {
+  background-color: #111827 !important;
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-theme .system-status-pill {
+  background-color: #064e3b !important;
+  color: #6ee7b7 !important;
+  border-color: #047857 !important;
+}
+
+body.dark-theme .location-tag {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .user-badge {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .user-name {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .btn-dark-toggle {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .btn-dark-toggle:hover {
+  background: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Área de contenido principal */
+body.dark-theme .main-content {
+  background-color: #0b0f19 !important;
+}
+
+body.dark-theme .content-wrapper {
+  background-color: #0b0f19 !important;
+}
+
+/* KPI Cards del Dashboard */
+body.dark-theme .kpi-card {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-theme .kpi-header small {
+  color: #64748b !important;
+}
+
+body.dark-theme .kpi-body h3 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .kpi-body .total {
+  color: #64748b !important;
+}
+
+body.dark-theme .kpi-icon {
+  background: #1e293b !important;
+}
+
+body.dark-theme .subtext {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .chip {
+  background: #1e293b !important;
+  color: #cbd5e1 !important;
+}
+
+/* Tabla de próximas salidas */
+body.dark-theme .table-card {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-theme .table-header h3 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme th {
+  color: #64748b !important;
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-theme td {
+  color: #cbd5e1 !important;
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-theme tr:hover {
+  background-color: #1e293b !important;
+}
+
+body.dark-theme .col-route {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .avatar-initials {
+  background: #1e3a5f !important;
+  color: #60a5fa !important;
+}
+
+body.dark-theme .progress-bar {
+  background: #1e293b !important;
+}
+
+/* Dashboard header */
+body.dark-theme .dashboard-header .title-area h2 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .dashboard-header .title-area p {
+  color: #94a3b8 !important;
+}
+
+/* Rutas disponibles */
+body.dark-theme .contenedor-principal {
+  background-color: transparent !important;
+}
+
+body.dark-theme .encabezado-admin h2,
+body.dark-theme .encabezado h2 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .encabezado-admin p,
+body.dark-theme .encabezado p {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .tarjeta-ruta-admin,
+body.dark-theme .tarjeta-viaje {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-theme .hora,
+body.dark-theme .ruta-texto {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .etiqueta-sub,
+body.dark-theme .detalles-bus,
+body.dark-theme .ocu-label,
+body.dark-theme .ocu-texto {
+  color: #64748b !important;
+}
+
+body.dark-theme .barra-filtros-fecha {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-theme .btn-filtro-fecha {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .btn-filtro-fecha:hover {
+  background: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .btn-filtro-fecha.activo {
+  background: #b45309 !important;
+  border-color: #b45309 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .input-fecha-box {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .input-fecha-box input[type="date"] {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+  color-scheme: dark;
+}
+
+/* Modal de nueva ruta */
+body.dark-theme .modal-card {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-theme .modal-header {
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-theme .modal-header h3 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .modal-close {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .modal-field label {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .modal-field input,
+body.dark-theme .modal-field select {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .modal-field select option {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .modal-footer {
+  border-top-color: #1e293b !important;
+}
+
+body.dark-theme .btn-cancelar {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+/* Flota */
+body.dark-theme .card-flota {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-theme .card-flota h3,
+body.dark-theme .card-flota .placa {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .card-flota .detalle {
+  color: #94a3b8 !important;
+}
+
+/* Módulo Pasajeros */
+body.dark-theme .vista-lista-viajes,
+body.dark-theme .modulo-pasajeros-container {
+  background-color: transparent !important;
+}
+
+body.dark-theme .encabezado-pasajeros .titulos h2 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .encabezado-pasajeros .titulos p {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .busqueda-viajes-box {
+  background: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-theme .busqueda-viajes-box input {
+  background: transparent !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .busqueda-viajes-box input::placeholder {
+  color: #64748b !important;
+}
+
+body.dark-theme .card-viaje-item {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-theme .card-viaje-top {
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-theme .origen,
+body.dark-theme .destino {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .lbl {
+  color: #64748b !important;
+}
+
+body.dark-theme .progreso-bar {
+  background: #1e293b !important;
+}
+
+/* Manifiesto */
+body.dark-theme .card-trip-details,
+body.dark-theme .card-seat-map,
+body.dark-theme .card-passenger-list {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-theme .card-trip-details h3,
+body.dark-theme .card-seat-map h3,
+body.dark-theme .card-passenger-list h3 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .dato-lbl {
+  color: #64748b !important;
+}
+
+body.dark-theme .dato-val {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .tabla-pasajeros th {
+  color: #64748b !important;
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-theme .tabla-pasajeros td {
+  color: #cbd5e1 !important;
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-theme .tabla-pasajeros tr:hover {
+  background-color: #1e293b !important;
+}
+
+body.dark-theme .asiento-mini {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .asiento-mini.asignado {
+  background: #1e3a5f !important;
+  color: #60a5fa !important;
+  border-color: #3b82f6 !important;
+}
+
+body.dark-theme .combi-mini-plataforma {
+  background: #111827 !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .piloto-mini {
+  background: #0f2744 !important;
+  color: #60a5fa !important;
+}
+
+body.dark-theme .manifiesto-header {
+  background: linear-gradient(135deg, #111827 0%, #1e293b 100%) !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .empresa-titulo h1,
+body.dark-theme .marca-empresa {
+  color: #f1f5f9 !important;
+}
+
+/* Venta de pasajes */
+body.dark-theme .venta-container,
+body.dark-theme .vista-pasajes {
+  background-color: transparent !important;
+}
+
+body.dark-theme .asiento {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .asiento.libre:hover {
+  background: #1e3a5f !important;
+}
+
+body.dark-theme .asiento.ocupado {
+  background: #3b1414 !important;
+  color: #f87171 !important;
+  border-color: #7f1d1d !important;
+}
+
+body.dark-theme .croquis-container,
+body.dark-theme .resumen-card {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+/* ============================================================ */
+/* ENCOMIENDAS DARK MODE                                        */
+/* ============================================================ */
+body.dark-theme .kpi-box,
+body.dark-theme .filtros-card,
+body.dark-theme .tabla-card {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-theme .header-titulos h2 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .header-titulos p {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .kpi-info h3 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .icon-hoy {
+  background: #1e293b !important;
+}
+
+body.dark-theme .buscador-box {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .buscador-box input {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .buscador-box input::placeholder {
+  color: #64748b !important;
+}
+
+body.dark-theme .select-estado-box select {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .persona-nombre,
+body.dark-theme .trayecto-col strong,
+body.dark-theme .precio-texto {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .desc-texto {
+  color: #cbd5e1 !important;
+}
+
+body.dark-theme .codigo-badge,
+body.dark-theme .peso-badge {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .btn-ticket {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-theme .btn-ticket:hover {
+  background: #334155 !important;
+}
+
+body.dark-theme .opcion-radio {
+  border-color: #334155 !important;
+  background: #1e293b !important;
+}
+
+body.dark-theme .opcion-radio.seleccionada {
+  border-color: #ea580c !important;
+  background: #431407 !important;
+}
+
+body.dark-theme .radio-contenido strong {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .radio-contenido small {
+  color: #94a3b8 !important;
+}
+
+/* ============================================================ */
+/* REGLAS GLOBALES DE IMPRESIÓN (PRINT)                         */
+/* Soporta tanto Boleta Térmica/Adhesivo como Manifiesto A4     */
+/* ============================================================ */
+@media print {
+  /* Ocultar siempre la interfaz estructural de la aplicación */
+  aside.sidebar,
+  header.topbar,
+  .no-print,
+  .btn-volver-viajes,
+  .btn-imprimir,
+  .btn-vender-shortcut,
+  .modal-close,
+  .modal-header-print-hide,
+  .modal-footer-print-hide,
+  .btn-cancelar,
+  .buscador-pasajeros-input,
+  .btn-asignar-mini,
+  .btn-schedule,
+  .btn-dark-toggle,
+  .btn-logout,
+  .acciones-row,
+  .filtros-card,
+  .barra-filtros-fecha,
+  .kpi-row {
+    display: none !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .app-container,
+  .main-content,
+  .content-wrapper {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  /* ----------------------------------------------------------- */
+  /* CASO 1: BOLETA / TICKET DE ENCOMIENDA (PEGATINA)            */
+  /* Se imprime solo la boleta limpia, sin pantalla ni modales   */
+  /* ----------------------------------------------------------- */
+  body.imprimiendo-boleta *,
+  body:has(.modal-boleta-ticket) * {
+    visibility: hidden;
+  }
+
+  body.imprimiendo-boleta #seccion-ticket-impresion,
+  body.imprimiendo-boleta #seccion-ticket-impresion *,
+  body:has(.modal-boleta-ticket) #seccion-ticket-impresion,
+  body:has(.modal-boleta-ticket) #seccion-ticket-impresion * {
+    visibility: visible !important;
+  }
+
+  body.imprimiendo-boleta .modal-backdrop,
+  body.imprimiendo-boleta .modal-card,
+  body.imprimiendo-boleta .modal-body-ticket,
+  body:has(.modal-boleta-ticket) .modal-backdrop,
+  body:has(.modal-boleta-ticket) .modal-card,
+  body:has(.modal-boleta-ticket) .modal-body-ticket {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: block !important;
+  }
+
+  body.imprimiendo-boleta #seccion-ticket-impresion,
+  body:has(.modal-boleta-ticket) #seccion-ticket-impresion {
+    position: absolute !important;
+    left: 20px !important;
+    top: 10px !important;
+    width: 330px !important;
+    max-width: 330px !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    border: 1.5px dashed #000000 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    page-break-after: avoid !important;
+  }
+
+  /* ----------------------------------------------------------- */
+  /* CASO 2: MANIFIESTO OFICIAL DE PASAJEROS (HOJA COMPLETA A4)  */
+  /* Solo imprime la cabecera oficial y el listado de pasajeros  */
+  /* ----------------------------------------------------------- */
+  body.imprimiendo-manifiesto *,
+  body:has(.vista-manifiesto-detalle) * {
+    visibility: hidden;
+  }
+
+  body.imprimiendo-manifiesto .vista-manifiesto-detalle,
+  body.imprimiendo-manifiesto .vista-manifiesto-detalle *,
+  body:has(.vista-manifiesto-detalle) .vista-manifiesto-detalle,
+  body:has(.vista-manifiesto-detalle) .vista-manifiesto-detalle * {
+    visibility: visible !important;
+  }
+
+  /* Ocultar el croquis interactivo de la combi y controles en pantalla */
+  body.imprimiendo-manifiesto .card-seat-map,
+  body.imprimiendo-manifiesto .manifiesto-topbar,
+  body.imprimiendo-manifiesto .buscador-pasajeros-input,
+  body.imprimiendo-manifiesto .btn-asignar-mini,
+  body:has(.vista-manifiesto-detalle) .card-seat-map,
+  body:has(.vista-manifiesto-detalle) .manifiesto-topbar,
+  body:has(.vista-manifiesto-detalle) .buscador-pasajeros-input,
+  body:has(.vista-manifiesto-detalle) .btn-asignar-mini {
+    display: none !important;
+  }
+
+  body.imprimiendo-manifiesto .vista-manifiesto-detalle,
+  body:has(.vista-manifiesto-detalle) .vista-manifiesto-detalle {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    padding: 10mm 15mm !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Encabezado formal del manifiesto */
+  body.imprimiendo-manifiesto .manifiesto-header,
+  body:has(.vista-manifiesto-detalle) .manifiesto-header {
+    background: #ffffff !important;
+    border-bottom: 2px solid #000000 !important;
+    color: #000000 !important;
+    padding: 0 0 8px 0 !important;
+    margin-bottom: 12px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+  }
+
+  body.imprimiendo-manifiesto .manifiesto-header h1,
+  body:has(.vista-manifiesto-detalle) .manifiesto-header h1 {
+    font-size: 16pt !important;
+    font-weight: 800 !important;
+    color: #000000 !important;
+    margin: 4px 0 0 0 !important;
+  }
+
+  body.imprimiendo-manifiesto .tag-sub,
+  body:has(.vista-manifiesto-detalle) .tag-sub {
+    font-size: 9pt !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    color: #000000 !important;
+  }
+
+  body.imprimiendo-manifiesto .agencia-sello,
+  body:has(.vista-manifiesto-detalle) .agencia-sello {
+    text-align: right !important;
+  }
+
+  body.imprimiendo-manifiesto .marca-empresa,
+  body:has(.vista-manifiesto-detalle) .marca-empresa {
+    font-size: 13pt !important;
+    font-weight: 900 !important;
+    color: #000000 !important;
+    display: block !important;
+  }
+
+  body.imprimiendo-manifiesto .oficina-txt,
+  body:has(.vista-manifiesto-detalle) .oficina-txt {
+    font-size: 9pt !important;
+    color: #333333 !important;
+  }
+
+  /* Resumen de viaje en formato compacto */
+  body.imprimiendo-manifiesto .grid-resumen-manifiesto,
+  body:has(.vista-manifiesto-detalle) .grid-resumen-manifiesto {
+    display: block !important;
+    margin-bottom: 12px !important;
+  }
+
+  body.imprimiendo-manifiesto .card-trip-details,
+  body:has(.vista-manifiesto-detalle) .card-trip-details {
+    background: #f8fafc !important;
+    border: 1px solid #000000 !important;
+    border-radius: 4px !important;
+    padding: 8px 14px !important;
+    box-shadow: none !important;
+  }
+
+  body.imprimiendo-manifiesto .card-trip-details h3,
+  body:has(.vista-manifiesto-detalle) .card-trip-details h3 {
+    font-size: 10pt !important;
+    margin: 0 0 6px 0 !important;
+    text-transform: uppercase !important;
+    color: #000000 !important;
+    border-bottom: 1px solid #ccc !important;
+    padding-bottom: 4px !important;
+  }
+
+  body.imprimiendo-manifiesto .trip-datos-grid,
+  body:has(.vista-manifiesto-detalle) .trip-datos-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  body.imprimiendo-manifiesto .dato-lbl,
+  body:has(.vista-manifiesto-detalle) .dato-lbl {
+    font-size: 8pt !important;
+    color: #555555 !important;
+    display: block !important;
+  }
+
+  body.imprimiendo-manifiesto .dato-val,
+  body:has(.vista-manifiesto-detalle) .dato-val {
+    font-size: 9.5pt !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+  }
+
+  body.imprimiendo-manifiesto .ocupacion-seccion,
+  body:has(.vista-manifiesto-detalle) .ocupacion-seccion {
+    display: none !important;
+  }
+
+  /* Tabla de Pasajeros formal para hoja completa */
+  body.imprimiendo-manifiesto .card-passenger-list,
+  body:has(.vista-manifiesto-detalle) .card-passenger-list {
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-top: 8px !important;
+  }
+
+  body.imprimiendo-manifiesto .passenger-list-header,
+  body:has(.vista-manifiesto-detalle) .passenger-list-header {
+    border-bottom: 1.5px solid #000000 !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 8px !important;
+  }
+
+  body.imprimiendo-manifiesto .passenger-list-header h3,
+  body:has(.vista-manifiesto-detalle) .passenger-list-header h3 {
+    font-size: 11pt !important;
+    font-weight: 800 !important;
+    color: #000000 !important;
+  }
+
+  body.imprimiendo-manifiesto .badge-total-pasajeros,
+  body:has(.vista-manifiesto-detalle) .badge-total-pasajeros {
+    background: transparent !important;
+    border: 1px solid #000000 !important;
+    color: #000000 !important;
+    font-size: 8.5pt !important;
+  }
+
+  body.imprimiendo-manifiesto .tabla-pasajeros,
+  body:has(.vista-manifiesto-detalle) .tabla-pasajeros {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 9.5pt !important;
+  }
+
+  body.imprimiendo-manifiesto .tabla-pasajeros th,
+  body:has(.vista-manifiesto-detalle) .tabla-pasajeros th {
+    background: #e2e8f0 !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    padding: 6px 8px !important;
+    font-weight: 800 !important;
+    font-size: 8.5pt !important;
+    text-align: left !important;
+    text-transform: uppercase !important;
+  }
+
+  body.imprimiendo-manifiesto .tabla-pasajeros td,
+  body:has(.vista-manifiesto-detalle) .tabla-pasajeros td {
+    border: 1px solid #000000 !important;
+    padding: 5px 8px !important;
+    color: #000000 !important;
+  }
+
+  body.imprimiendo-manifiesto .asiento-pill,
+  body:has(.vista-manifiesto-detalle) .asiento-pill {
+    background: transparent !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
+    border: none !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  body.imprimiendo-manifiesto .texto-disponible,
+  body:has(.vista-manifiesto-detalle) .texto-disponible {
+    color: #777777 !important;
+    font-style: italic !important;
+  }
+
+  body.imprimiendo-manifiesto .badge-estado-ocupado,
+  body:has(.vista-manifiesto-detalle) .badge-estado-ocupado {
+    background: transparent !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    padding: 0 !important;
+  }
+
+  /* Pie de firmas para hoja A4 */
+  body.imprimiendo-manifiesto .pie-impresion-oficial,
+  body:has(.vista-manifiesto-detalle) .pie-impresion-oficial {
+    display: flex !important;
+    justify-content: space-around !important;
+    margin-top: 45px !important;
+    padding-top: 15px !important;
+    page-break-inside: avoid !important;
+  }
+
+  body.imprimiendo-manifiesto .linea-firma,
+  body:has(.vista-manifiesto-detalle) .linea-firma {
+    border-top: 1px solid #000000 !important;
+    width: 220px !important;
+    margin: 0 auto 6px auto !important;
+  }
+
+  body.imprimiendo-manifiesto .firma-box span,
+  body:has(.vista-manifiesto-detalle) .firma-box span {
+    color: #000000 !important;
+    font-size: 9pt !important;
+    font-weight: 600 !important;
+  }
+}

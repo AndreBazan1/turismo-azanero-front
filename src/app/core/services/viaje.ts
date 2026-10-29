@@ -9,9 +9,15 @@ export class ViajeService {
   private apiUrl = 'http://localhost:8080/api/v1/viajes';
   private baseUrl = 'http://localhost:8080/api/v1';
 
-  // Pantalla principal: Listar todos los viajes en tarjetas
-  listarProgramados(): Observable<ViajeResponse[]> {
-    return this.http.get<ViajeResponse[]>(this.apiUrl);
+  // Pantalla principal: Listar viajes programados (por día o todos)
+  listarProgramados(fecha?: string, todos: boolean = false): Observable<ViajeResponse[]> {
+    let params = new HttpParams();
+    if (todos) {
+      params = params.set('todos', 'true');
+    } else if (fecha) {
+      params = params.set('fecha', fecha);
+    }
+    return this.http.get<ViajeResponse[]>(this.apiUrl, { params });
   }
 
   // Obtener un viaje específico por ID

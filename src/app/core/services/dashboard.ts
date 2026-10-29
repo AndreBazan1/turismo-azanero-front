@@ -11,11 +11,14 @@ export interface SalidaDTO {
   vehiculoId: string;
   ocupacion: string;
   porcentaje: number;
-  estado: 'On Time' | 'Boarding' | 'Delayed 10m';
+  estado: string;
 }
 
 export interface DashboardResumen {
   viajesHoy: number;
+  viajesAyer?: number;
+  tendenciaViajes?: string;
+  tendenciaPositiva?: boolean;
   flotaDisponible: number;
   totalFlota: number;
   enMantenimiento: number;
@@ -23,6 +26,7 @@ export interface DashboardResumen {
   totalPasajeros: number;
   pasajerosCajamarca: number;
   pasajerosCelendin: number;
+  tendenciaPasajeros?: string;
   proximasSalidas: SalidaDTO[];
 }
 

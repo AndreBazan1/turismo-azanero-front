@@ -289,6 +289,12 @@
   font-weight: 600;
 }
 
+.trend.negative {
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .subtext {
   color: #64748b;
   font-size: 0.75rem;
@@ -455,4 +461,19 @@ tr:hover {
 .status-delayed {
   background: #fef3c7;
   color: #b45309;
+}
+
+.status-en-ruta {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.status-finalizado {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.status-cancelado {
+  background: #fee2e2;
+  color: #b91c1c;
 }

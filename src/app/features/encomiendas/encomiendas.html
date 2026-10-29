@@ -1,0 +1,584 @@
+<div class="encomiendas-container">
+
+  <!-- ============================================================ -->
+  <!-- ENCABEZADO DEL MÓDULO                                         -->
+  <!-- ============================================================ -->
+  <div class="modulo-header">
+    <div class="header-titulos">
+      <h2>📦 Gestión de Encomiendas</h2>
+      <p>Recepción de paquetes, generación de boletas/guías para pegar en encomiendas y despacho en combis.</p>
+    </div>
+    <div class="header-acciones">
+      <button class="btn-nueva-encomienda" (click)="abrirModalRegistro()">
+        <span>+ Registrar Encomienda</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- TARJETAS RESUMEN / KPIS                                      -->
+  <!-- ============================================================ -->
+  <div class="kpi-encomiendas-grid">
+    <div class="kpi-box">
+      <div class="kpi-info">
+        <span class="kpi-sub">Registradas Hoy</span>
+        <h3>{{ totalHoy }}</h3>
+      </div>
+      <div class="kpi-icono icon-hoy">📅</div>
+    </div>
+
+    <div class="kpi-box">
+      <div class="kpi-info">
+        <span class="kpi-sub">En Agencia (Esperando Combi)</span>
+        <h3 class="text-warning">{{ totalRecepcionados }}</h3>
+      </div>
+      <div class="kpi-icono icon-espera">📦</div>
+    </div>
+
+    <div class="kpi-box">
+      <div class="kpi-info">
+        <span class="kpi-sub">En Ruta (En Tránsito)</span>
+        <h3 class="text-info">{{ totalEnTransito }}</h3>
+      </div>
+      <div class="kpi-icono icon-ruta">🚌</div>
+    </div>
+
+    <div class="kpi-box">
+      <div class="kpi-info">
+        <span class="kpi-sub">Entregadas</span>
+        <h3 class="text-success">{{ totalEntregados }}</h3>
+      </div>
+      <div class="kpi-icono icon-entregado">✅</div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- BARRA DE FILTROS Y BÚSQUEDA                                  -->
+  <!-- ============================================================ -->
+  <div class="filtros-card">
+    <div class="filtros-izq">
+      <!-- Filtros de fecha rápidos -->
+      <div class="botones-fecha">
+        <button type="button" class="btn-filtro-fecha" [class.activo]="!mostrarTodos && fechaFiltro < hoyStr" (click)="filtrarAyer()">
+          ◀ Ayer
+        </button>
+        <button type="button" class="btn-filtro-fecha" [class.activo]="!mostrarTodos && fechaFiltro === hoyStr" (click)="filtrarHoy()">
+          📅 Hoy
+        </button>
+        <button type="button" class="btn-filtro-fecha" [class.activo]="mostrarTodos" (click)="filtrarTodos()">
+          Todas las fechas
+        </button>
+      </div>
+
+      <div class="input-fecha-box">
+        <label>Fecha:</label>
+        <input type="date" [ngModel]="fechaFiltro" (ngModelChange)="cambiarFecha($event)" />
+      </div>
+
+      <!-- Filtro por Estado -->
+      <div class="select-estado-box">
+        <label>Estado:</label>
+        <select [(ngModel)]="estadoFiltro" (ngModelChange)="aplicarFiltros()">
+          <option value="TODOS">Todos los estados</option>
+          <option value="RECEPCIONADO">📦 Esperando Combi</option>
+          <option value="EN_TRANSITO">🚌 En Tránsito</option>
+          <option value="ENTREGADO">✅ Entregados</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Buscador en tiempo real -->
+    <div class="buscador-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="busquedaTexto"
+        (ngModelChange)="aplicarFiltros()"
+        placeholder="Buscar por código, DNI, persona o descripción..." />
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- TABLA DE ENCOMIENDAS                                         -->
+  <!-- ============================================================ -->
+  <div class="tabla-card">
+    @if (cargando) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando lista de encomiendas...</p>
+      </div>
+    } @else {
+      @if (encomiendasFiltradas.length > 0) {
+        <div class="table-responsive">
+          <table class="tabla-encomiendas">
+            <thead>
+              <tr>
+                <th>Código / Fecha</th>
+                <th>Trayecto</th>
+                <th>Remitente (Envía)</th>
+                <th>Destinatario (Recibe)</th>
+                <th>Descripción del Paquete</th>
+                <th>Condición de Pago</th>
+                <th>Combi Asignada</th>
+                <th>Estado</th>
+                <th style="text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (e of encomiendasFiltradas; track e.idEncomienda) {
+                <tr>
+                  <!-- Código y Fecha -->
+                  <td>
+                    <div class="codigo-box">
+                      <span class="codigo-badge">{{ e.codigoSeguimiento }}</span>
+                      <small class="fecha-sub">{{ e.fechaRegistro | date:'dd/MM/yyyy h:mm a' }}</small>
+                    </div>
+                  </td>
+
+                  <!-- Trayecto -->
+                  <td>
+                    <div class="trayecto-col">
+                      <strong>{{ e.ciudadOrigen }}</strong>
+                      <span class="flecha">➔</span>
+                      <strong>{{ e.ciudadDestino }}</strong>
+                    </div>
+                  </td>
+
+                  <!-- Remitente -->
+                  <td>
+                    <div class="persona-col">
+                      <span class="persona-nombre">{{ e.remitenteNombre }}</span>
+                      <small class="persona-detalles">DNI: {{ e.remitenteDni }} • Tel: {{ e.remitenteTelefono }}</small>
+                    </div>
+                  </td>
+
+                  <!-- Destinatario -->
+                  <td>
+                    <div class="persona-col">
+                      <span class="persona-nombre">{{ e.destinatarioNombre }}</span>
+                      <small class="persona-detalles">DNI: {{ e.destinatarioDni }} • Tel: {{ e.destinatarioTelefono }}</small>
+                    </div>
+                  </td>
+
+                  <!-- Descripción -->
+                  <td>
+                    <div class="descripcion-col">
+                      <span class="desc-texto">{{ e.descripcion || 'Sin descripción' }}</span>
+                      <small class="peso-badge">{{ e.peso }} kg</small>
+                    </div>
+                  </td>
+
+                  <!-- Pago -->
+                  <td>
+                    <div class="pago-col">
+                      <span class="precio-texto">S/ {{ e.precio | number:'1.2-2' }}</span>
+                      @if (e.pagoEstado === 'POR_PAGAR') {
+                        <span class="badge-por-pagar" title="Cobrar este monto al entregar en destino">
+                          ⚠️ Paga Destino
+                        </span>
+                      } @else {
+                        <span class="badge-pagado" title="Cancelado por el remitente">
+                          ✓ Pagado
+                        </span>
+                      }
+                    </div>
+                  </td>
+
+                  <!-- Combi Asignada -->
+                  <td>
+                    @if (e.viajeInfo) {
+                      <span class="combi-badge">{{ e.viajeInfo }}</span>
+                    } @else {
+                      <span class="combi-pendiente">En Agencia</span>
+                    }
+                  </td>
+
+                  <!-- Estado -->
+                  <td>
+                    @switch (e.estado) {
+                      @case ('RECEPCIONADO') {
+                        <span class="estado-badge badge-recepcionado">● En Agencia</span>
+                      }
+                      @case ('EN_TRANSITO') {
+                        <span class="estado-badge badge-en-transito">🚌 En Tránsito</span>
+                      }
+                      @case ('ENTREGADO') {
+                        <span class="estado-badge badge-entregado">✓ Entregado</span>
+                      }
+                      @default {
+                        <span class="estado-badge">{{ e.estado }}</span>
+                      }
+                    }
+                  </td>
+
+                  <!-- Acciones -->
+                  <td style="text-align: right;">
+                    <div class="acciones-row">
+                      <!-- Botón Boleta / Pegatina -->
+                      <button class="btn-accion btn-ticket" (click)="verBoleta(e)" title="Imprimir Boleta / Pegatina">
+                        🏷️ Boleta
+                      </button>
+
+                      <!-- Asignar combi si está en agencia -->
+                      @if (e.estado === 'RECEPCIONADO') {
+                        <button class="btn-accion btn-despachar" (click)="abrirAsignarCombi(e)" title="Asignar a combi">
+                          🚌 Despachar
+                        </button>
+                      }
+
+                      <!-- Marcar como entregado si está en tránsito -->
+                      @if (e.estado === 'EN_TRANSITO' || e.estado === 'RECEPCIONADO') {
+                        <button class="btn-accion btn-entregar" (click)="cambiarEstado(e, 'ENTREGADO')" title="Marcar como entregado al destinatario">
+                          ✅ Entregar
+                        </button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="vacio-box">
+          <div class="vacio-icon">📦</div>
+          <h4>No se encontraron encomiendas</h4>
+          <p>No hay encomiendas para los filtros seleccionados. Registra una nueva con el botón "+ Registrar Encomienda".</p>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: REGISTRAR NUEVA ENCOMIENDA                            -->
+  <!-- ============================================================ -->
+  @if (mostrarModalRegistro) {
+    <div class="modal-backdrop">
+      <div class="modal-card modal-encomienda">
+        <div class="modal-header">
+          <div class="modal-title-area">
+            <h3>📦 Registrar Nueva Encomienda</h3>
+            <p>Ingresa los datos para generar la boleta y adhesivo de envío.</p>
+          </div>
+          <button class="modal-close" (click)="cerrarModalRegistro()">✕</button>
+        </div>
+
+        <div class="modal-body">
+          @if (mensajeModalError) {
+            <div class="alerta-error">{{ mensajeModalError }}</div>
+          }
+
+          <!-- 1. TRAYECTO: ORIGEN Y DESTINO -->
+          <div class="seccion-formulario">
+            <h4 class="seccion-titulo">📍 1. Trayecto del Envío</h4>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Ciudad Origen (Dónde se deja)</label>
+                <select [(ngModel)]="nuevaEncomienda.ciudadOrigenId">
+                  @for (c of ciudades; track c.idCiudad) {
+                    <option [ngValue]="c.idCiudad">{{ c.nombre }}</option>
+                  }
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label>Ciudad Destino (Hacia dónde va)</label>
+                <select [(ngModel)]="nuevaEncomienda.ciudadDestinoId">
+                  @for (c of ciudades; track c.idCiudad) {
+                    <option [ngValue]="c.idCiudad">{{ c.nombre }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. REMITENTE (QUIEN ENVÍA) -->
+          <div class="seccion-formulario">
+            <h4 class="seccion-titulo">👤 2. Datos del Remitente (Quien Envía)</h4>
+            <div class="form-row form-row-3">
+              <div class="form-field">
+                <label>DNI Remitente</label>
+                <div class="input-con-boton">
+                  <input
+                    type="text"
+                    maxlength="8"
+                    [(ngModel)]="nuevaEncomienda.remitenteDni"
+                    (input)="onDniRemitenteInput()"
+                    (blur)="consultarDniRemitente()"
+                    (keyup.enter)="consultarDniRemitente()"
+                    placeholder="8 dígitos" />
+                  <button type="button" class="btn-reniec" (click)="consultarDniRemitente()" [disabled]="buscandoDniRemitente" title="Buscar en RENIEC">
+                    {{ buscandoDniRemitente ? '⏳' : '🔍 RENIEC' }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-field col-span-2">
+                <label>Nombres y Apellidos</label>
+                <input
+                  type="text"
+                  [(ngModel)]="nuevaEncomienda.remitenteNombre"
+                  placeholder="Nombres y apellidos completos" />
+              </div>
+
+              <div class="form-field">
+                <label>Teléfono de Contacto</label>
+                <input
+                  type="tel"
+                  [(ngModel)]="nuevaEncomienda.remitenteTelefono"
+                  placeholder="Ej: 976123456" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. DESTINATARIO (QUIEN RECIBIRÁ) -->
+          <div class="seccion-formulario">
+            <h4 class="seccion-titulo">🎯 3. Datos del Destinatario (Quien Recibe en Agencia)</h4>
+            <div class="form-row form-row-3">
+              <div class="form-field">
+                <label>DNI Destinatario</label>
+                <div class="input-con-boton">
+                  <input
+                    type="text"
+                    maxlength="8"
+                    [(ngModel)]="nuevaEncomienda.destinatarioDni"
+                    (input)="onDniDestinatarioInput()"
+                    (blur)="consultarDniDestinatario()"
+                    (keyup.enter)="consultarDniDestinatario()"
+                    placeholder="8 dígitos" />
+                  <button type="button" class="btn-reniec" (click)="consultarDniDestinatario()" [disabled]="buscandoDniDestinatario" title="Buscar en RENIEC">
+                    {{ buscandoDniDestinatario ? '⏳' : '🔍 RENIEC' }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-field col-span-2">
+                <label>Nombres y Apellidos</label>
+                <input
+                  type="text"
+                  [(ngModel)]="nuevaEncomienda.destinatarioNombre"
+                  placeholder="Nombres y apellidos completos" />
+              </div>
+
+              <div class="form-field">
+                <label>Teléfono de Contacto</label>
+                <input
+                  type="tel"
+                  [(ngModel)]="nuevaEncomienda.destinatarioTelefono"
+                  placeholder="Ej: 987654321" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. DETALLES DEL PAQUETE Y PAGO -->
+          <div class="seccion-formulario">
+            <h4 class="seccion-titulo">📦 4. Detalle de la Carga y Cobro</h4>
+            <div class="form-row">
+              <div class="form-field col-span-2">
+                <label>¿Qué contiene el paquete o encomienda?</label>
+                <input
+                  type="text"
+                  [(ngModel)]="nuevaEncomienda.descripcion"
+                  placeholder="Ej: Caja con ropa y víveres, Sobre con documentos..." />
+              </div>
+
+              <div class="form-field">
+                <label>Peso Aprox. (Kg)</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  min="0.1"
+                  [(ngModel)]="nuevaEncomienda.peso" />
+              </div>
+
+              <div class="form-field">
+                <label>Monto a Cobrar (S/)</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  min="1"
+                  [(ngModel)]="nuevaEncomienda.precio" />
+              </div>
+            </div>
+
+            <!-- Condición de Pago: ¿Quién cancela? -->
+            <div class="pago-selector-box">
+              <label class="pago-selector-label">¿Quién cancela el costo del envío?</label>
+              <div class="opciones-pago">
+                <label class="opcion-radio" [class.seleccionada]="nuevaEncomienda.pagoEstado === 'PAGADO'">
+                  <input
+                    type="radio"
+                    name="pagoEstado"
+                    value="PAGADO"
+                    [(ngModel)]="nuevaEncomienda.pagoEstado" />
+                  <div class="radio-contenido">
+                    <strong>✓ Pagado en Origen</strong>
+                    <small>El remitente cancela el monto en este momento en ventanilla.</small>
+                  </div>
+                </label>
+
+                <label class="opcion-radio" [class.seleccionada]="nuevaEncomienda.pagoEstado === 'POR_PAGAR'">
+                  <input
+                    type="radio"
+                    name="pagoEstado"
+                    value="POR_PAGAR"
+                    [(ngModel)]="nuevaEncomienda.pagoEstado" />
+                  <div class="radio-contenido">
+                    <strong>⚠️ Pago en Destino (Contraentrega)</strong>
+                    <small>Cancela quien recoge el paquete en la agencia de destino.</small>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Asignar Combi (Opcional) -->
+            <div class="form-field" style="margin-top: 14px;">
+              <label>Asignar a Combi de Hoy (Opcional)</label>
+              <select [(ngModel)]="nuevaEncomienda.viajeId">
+                <option [ngValue]="null">Esperar en agencia (Se asignará a la próxima salida)</option>
+                @for (v of viajesDisponibles; track v.idViaje) {
+                  <option [ngValue]="v.idViaje">
+                    {{ v.ciudadOrigen }} ➔ {{ v.ciudadDestino }} | Salida: {{ v.fechaHora | date:'h:mm a' }} | Bus: {{ v.placa }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancelar" (click)="cerrarModalRegistro()" [disabled]="guardando">Cancelar</button>
+          <button class="btn-guardar" (click)="guardarEncomienda()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : '💾 Registrar e Imprimir Boleta' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ============================================================ -->
+  <!-- MODAL: BOLETA / PEGATINA DE ENCOMIENDA (IMPRIMIBLE)         -->
+  <!-- ============================================================ -->
+  @if (mostrarModalBoleta && encomiendaSeleccionada) {
+    <div class="modal-backdrop">
+      <div class="modal-card modal-boleta-ticket">
+        <div class="modal-header modal-header-print-hide">
+          <h3>🏷️ Boleta / Adhesivo de Encomienda</h3>
+          <button class="modal-close" (click)="cerrarModalBoleta()">✕</button>
+        </div>
+
+        <div class="modal-body-ticket">
+          <!-- Vista del Ticket térmico / Adhesivo para pegar en la combi/paquete -->
+          <div class="ticket-impresion" id="seccion-ticket-impresion">
+            <div class="ticket-empresa">
+              <h2>EMPRESA DE TRANSPORTES Y TURISMO AZAÑERO</h2>
+              <p>R.U.C. 20601234567 • SERVICIO DE ENCOMIENDAS Y GIROS</p>
+              <div class="ticket-linea">--------------------------------------------------</div>
+              <div class="ticket-tipo-doc">GUÍA / BOLETA DE ENCOMIENDA</div>
+              <div class="ticket-codigo">{{ encomiendaSeleccionada.codigoSeguimiento }}</div>
+              <div class="ticket-fecha">Fecha: {{ encomiendaSeleccionada.fechaRegistro | date:'dd/MM/yyyy h:mm a' }}</div>
+            </div>
+
+            <div class="ticket-linea">--------------------------------------------------</div>
+
+            <div class="ticket-ruta-destacada">
+              <span>{{ encomiendaSeleccionada.ciudadOrigen | uppercase }}</span>
+              <span class="ticket-flecha">➔</span>
+              <span>{{ encomiendaSeleccionada.ciudadDestino | uppercase }}</span>
+            </div>
+
+            <div class="ticket-linea">--------------------------------------------------</div>
+
+            <div class="ticket-seccion">
+              <div class="ticket-fila"><strong>REMITENTE (ENVÍA):</strong></div>
+              <div class="ticket-fila-val">{{ encomiendaSeleccionada.remitenteNombre }}</div>
+              <div class="ticket-fila-det">DNI: {{ encomiendaSeleccionada.remitenteDni }} • Tel: {{ encomiendaSeleccionada.remitenteTelefono }}</div>
+            </div>
+
+            <div class="ticket-linea">--------------------------------------------------</div>
+
+            <div class="ticket-seccion">
+              <div class="ticket-fila"><strong>DESTINATARIO (RECIBE):</strong></div>
+              <div class="ticket-fila-destacada">{{ encomiendaSeleccionada.destinatarioNombre }}</div>
+              <div class="ticket-fila-det">DNI: {{ encomiendaSeleccionada.destinatarioDni }} • Tel: {{ encomiendaSeleccionada.destinatarioTelefono }}</div>
+            </div>
+
+            <div class="ticket-linea">--------------------------------------------------</div>
+
+            <div class="ticket-seccion">
+              <div class="ticket-fila"><strong>CONTENIDO / DESCRIPCIÓN:</strong></div>
+              <div class="ticket-fila-val">{{ encomiendaSeleccionada.descripcion || 'Paquete' }}</div>
+              <div class="ticket-fila-det">Peso: {{ encomiendaSeleccionada.peso }} kg</div>
+            </div>
+
+            <div class="ticket-linea">--------------------------------------------------</div>
+
+            <!-- Condición de Pago Resaltada en Grande para pegar en el paquete -->
+            <div class="ticket-pago-destacado" [class.ticket-pago-contraentrega]="encomiendaSeleccionada.pagoEstado === 'POR_PAGAR'">
+              @if (encomiendaSeleccionada.pagoEstado === 'POR_PAGAR') {
+                <div class="aviso-cobro">⚠️ PAGO PENDIENTE EN DESTINO</div>
+                <div class="monto-cobro">COBRAR: S/ {{ encomiendaSeleccionada.precio | number:'1.2-2' }}</div>
+              } @else {
+                <div class="aviso-cancelado">✓ CANCELADO / PAGADO</div>
+                <div class="monto-cancelado">TOTAL: S/ {{ encomiendaSeleccionada.precio | number:'1.2-2' }}</div>
+              }
+            </div>
+
+            <div class="ticket-linea">--------------------------------------------------</div>
+
+            <div class="ticket-footer">
+              <p>Receptor: {{ encomiendaSeleccionada.registradoPor }}</p>
+              <div class="ticket-barcode">||| | ||||| |||| | |||| || |||||| | |||</div>
+              <small>PEGA ESTE COMPROBANTE EN EL PAQUETE</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer modal-footer-print-hide">
+          <button class="btn-cancelar" (click)="cerrarModalBoleta()">Cerrar</button>
+          <button class="btn-imprimir" (click)="imprimirBoleta()">
+            🖨️ Imprimir Boleta (Pegar en Encomienda)
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ============================================================ -->
+  <!-- MODAL: ASIGNAR COMBI / DESPACHAR                            -->
+  <!-- ============================================================ -->
+  @if (mostrarModalAsignar && encomiendaParaAsignar) {
+    <div class="modal-backdrop">
+      <div class="modal-card modal-asignar">
+        <div class="modal-header">
+          <h3>🚌 Despachar Encomienda en Combi</h3>
+          <button class="modal-close" (click)="cerrarModalAsignar()">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <p>Selecciona la salida programada en la que viajará la encomienda <strong>{{ encomiendaParaAsignar.codigoSeguimiento }}</strong> hacia <strong>{{ encomiendaParaAsignar.ciudadDestino }}</strong>:</p>
+
+          <div class="form-field" style="margin-top: 16px;">
+            <label>Salidas Disponibles Hoy</label>
+            <select [(ngModel)]="viajeSeleccionadoParaAsignar">
+              <option [ngValue]="null" disabled>Selecciona una salida</option>
+              @for (v of viajesDisponibles; track v.idViaje) {
+                <option [ngValue]="v.idViaje">
+                  {{ v.ciudadOrigen }} ➔ {{ v.ciudadDestino }} | Salida: {{ v.fechaHora | date:'h:mm a' }} | Bus: {{ v.placa }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancelar" (click)="cerrarModalAsignar()">Cancelar</button>
+          <button class="btn-guardar" (click)="confirmarAsignacionCombi()" [disabled]="!viajeSeleccionadoParaAsignar">
+            Confirmar Despacho
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
